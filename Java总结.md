@@ -555,7 +555,7 @@
    >
    > - **共享进程资源**：在同一进程中的各个线程，都可以共享该进程所拥有的资源，这首先表现在：所有线程都具有相同的地址空间（进程的地址空间），这意味着，线程可以访问该地址空间的每一个虚地址；此外，还可以访问进程所拥有的已打开文件、定时器、信号量机构等。由于同一个进程内的线程共享内存和文件，所以线程之间互相通信不必调用内核。
 
-2. 进程之间的通信？
+2. 进程之间的通信？（套共消，管信信）
 
    （1）套接字
 
@@ -604,8 +604,8 @@
 
 3. 信号和信号量之间的区别？
 
-   - 信号量：（Semaphore）进程间通信处理同步互斥的机制。是在多线程环境下使用的一种设施, 它负责协调各个线程, 以保证它们能够正确、合理的使用公共资源。
-   - 信号：（signal）是一种处理异步事件的方式。信号是比较复杂的通信方式，用于通知接受进程有某种事件发生，除了用于进程外，还可以发送信号给进程本身。
+   - 信号量：（Semaphore）进程间通信处理同步互斥的机制。是在多线程环境下使用的一种设施, 它负责协调各个线程, 以保证它们能够正确、合理的使用公共资源。（特点，pv操作，用于同步进程）
+   - 信号：（signal）是一种处理异步事件的方式。信号是比较复杂的通信方式，用于通知接受进程有某种事件发生，除了用于进程外，还可以发送信号给进程本身。（特点，通知）
 
 4. 线程之间的通信？
 
@@ -637,35 +637,35 @@
    - `周转时间`：从任务开始到任务结束的时间
    - `平均周转时间`：周转总时间除以作业个数
 
-   （2）调度算法
+   （2）调度算法(8种)
 
-   - FCFS：调度的顺序就是任务到达就绪队列的顺序。对短作业不公平。
+   - [1] FCFS：调度的顺序就是任务到达就绪队列的顺序。对短作业不公平。
 
      > 公平、简单(FIFO队列)、非抢占、不适合交互式。未考虑任务特性，平均等待时间可以缩短
 
-   - SJF：最短的作业(CPU区间长度最小)最先调度。
+   - [2] SJF：最短的作业(CPU区间长度最小)最先调度。
 
      > 可以证明，SJF可以保证最小的平均等待时间。
 
-   - SRJF：SJF的可抢占版本，比SJF更有优势。
+   - [3] SRJF：SJF的可抢占版本，比SJF更有优势。
 
         SJF(SRJF): 如何知道下一CPU区间大小？根据历史进行预测: 指数平均法。
 
-   - HRN：最高响应比优先法，是FCFS和SJF的综合平衡，响应比R定义如下： `R =(W+T)/T` 。
+   - [4] HRN：最高响应比优先法，是FCFS和SJF的综合平衡，响应比R定义如下： `R =(W+T)/T` 。
 
-   - 优先权调度：每个任务关联一个优先权，调度优先权最高的任务。
+   - [5] 优先权调度：每个任务关联一个优先权，调度优先权最高的任务。
 
      > 注意：优先权太低的任务一直就绪，得不到运行，出现“饥饿”现象。
      >
      > FCFS是RR的特例，SJF是优先权调度的特例。这些调度算法都不适合于交互式系统。
 
-   - Round-Robin(RR)：设置一个时间片，按时间片来轮转调度
+   - [6] Round-Robin(RR)：设置一个时间片，按时间片来轮转调度
 
      > 优点: 定时有响应，等待时间较短；缺点: 上下文切换次数较多；
      >
      > 时间片太大，响应时间太长；吞吐量变小，周转时间变长；当时间片过长时，退化为FCFS。
 
-   - 多级队列调度
+   - [7] 多级队列调度
 
      > - 按照一定的规则建立多个进程队列
      > - 不同的队列有固定的优先级（高优先级有抢占权）
@@ -675,7 +675,7 @@
      >
      > 存在问题2：也存在一定程度的“饥饿”现象；
 
-   - 多级反馈队列：在多级队列的基础上，任务可以在队列之间移动，更细致的区分任务。可以根据“享用”CPU时间多少来移动队列，阻止“饥饿”。
+   - [8] 多级反馈队列：在多级队列的基础上，任务可以在队列之间移动，更细致的区分任务。可以根据“享用”CPU时间多少来移动队列，阻止“饥饿”。
 
      > 最通用的调度算法，多数OS都使用该方法或其变形，如UNIX、Windows等。
 
@@ -721,7 +721,7 @@
 
 9. CAS
 
-   > 比较并交换(compare and swap, CAS)**，是原子操作的一种，可用于在多线程编程中实现不被打断的数据交换操作。**该操作通过将内存中的值与指定数据进行比较，当数值一样时将内存中的数据替换为新的值**。
+   > 比较并交换(compare and swap, CAS)**，是原子操作的一种，可用于在多线程编程中实现不被打断的数据交换操作。**该操作通过将内存中的值与指定数据进行比较，当数值一样时将内存中的数据替换为新的值。
    >
    > 在使用上，通常会记录下某块内存中的旧值，通过对旧值进行一系列的操作后得到新值，然后通过CAS操作将新值与旧值进行交换。**如果这块内存的值在这期间内没被修改过，则旧值会与内存中的数据相同，这时CAS操作将会成功执行使内存中的数据变为新值**。如果内存中的值在这期间内被修改过，则一般来说旧值会与内存中的数据不同，这时CAS操作将会失败，新值将不会被写入内存。
 
@@ -734,19 +734,59 @@
    - **LFU(Least Frequently Used)算法**：即最不经常使用页置换算法，要求在页置换时置换引用计数最小的页，因为经常使用的页应该有一个较大的引用次数。**与页面使用次数有关**。
    - **Clock**：给每个页帧关联一个使用位，当该页第一次装入内存或者被重新访问到时，将使用位置为1。每次需要替换时，查找使用位被置为0的第一个帧进行替换。在扫描过程中，如果碰到使用位为1的帧，将使用位置为0，在继续扫描。如果所谓帧的使用位都为0，则替换第一个帧。
 
-### （四）
+### （四）I/O
+
+1.  I/O模式？[参考](https://segmentfault.com/a/1190000003063859)
+
+   （1）阻塞I/O（blocking IO）
+
+   > 当用户进程调用了 `recvfrom` 这个系统调用， `kernel` 就开始了 IO 的第一个阶段：准备数据（对于网络IO来说，很多时候数据在一开始还没有到达。比如，还没有收到一个完整的 `UDP` 包。这个时候 `kernel` 就要等待足够的数据到来）。这个过程需要等待，也就是说数据被拷贝到操作系统内核的缓冲区中是需要一个过程的。而在用户进程这边，整个进程会被阻塞（当然，是进程自己选择的阻塞）。当 `kernel` 一直等到数据准备好了，它就会将数据从 `kernel` 中拷贝到用户内存，然后 `kernel` 返回结果，用户进程才解除 `block` 的状态，重新运行起来。
+   >
+   > > blocking IO的特点就是在IO执行的两个阶段都被block了
+
+   （2）非阻塞I/O（nonblocking IO）
+
+   > 当用户进程发出 `read` 操作时，如果 `kernel` 中的数据还没有准备好，那么它并不会 `block` 用户进程，而是立刻返回一个 `error` 。从用户进程角度讲 ，它发起一个 `read` 操作后，并不需要等待，而是马上就得到了一个结果。用户进程判断结果是一个 `error` 时，它就知道数据还没有准备好，于是它可以再次发送 `read` 操作。一旦 `kernel` 中的数据准备好了，并且又再次收到了用户进程的 `system call` ，那么它马上就将数据拷贝到了用户内存，然后返回。
+   >
+   > > nonblocking IO的特点是用户进程需要不断的主动询问kernel数据好了没有
+   > >
+   > > NIO**和****IO****之间一个最大区别：****IO****是面向流的，****NIO****是面向缓冲区的。**
+
+   （3）I/O多路复用（ IO multiplexing）（Java中的NIO使用channel来完成多路复用）
+
+   > IO multiplexing就是我们说的select，poll，epoll，有些地方也称这种IO方式为event driven IO。select/epoll的好处就在于单个process就可以同时处理多个网络连接的IO。它的基本原理就是select，poll，epoll这个function会不断的轮询所负责的所有socket，当某个socket有数据到达了，就通知用户进程。
+   >
+   > > 所以，I/O 多路复用的特点是通过一种机制一个进程能同时等待多个文件描述符，而这些文件描述符（套接字描述符）其中的任意一个进入读就绪状态，select()函数就可以返回。
+
+   （4）信号驱动I/O（ signal driven IO）
+
+   （5）异步I/O（asynchronous IO）（并不会加快io的过程）
+
+   > 用户进程发起 `read` 操作之后，立刻就可以开始去做其它的事。而另一方面，从 `kernel` 的角度，当它受到一个 `asynchronous read` 之后，首先它会立刻返回，所以不会对用户进程产生任何 `block` 。然后，`kernel` 会等待数据准备完成，然后将数据拷贝到用户内存，当这一切都完成之后，`kernel` 会给用户进程发送一个 `signal` ，告诉它 `read` 操作完成了。
+
+2. 零拷贝zero-copy是什么？如何实现？
+
+   （1）用户态和内核态？
+
+   （2）零拷贝实现？
+
+3. 同步异步，阻塞非阻塞的区别。
+
+   无论阻塞式IO还是非阻塞式IO，都是同步IO模型，区别就在与第一步是否完成后才返回，但第二步都需要当前进程去完成，异步IO呢，就是从第一步开始就返回，直到第二步完成后才会返回一个消息，也就是说，非阻塞能够让你在第一步时去做其它的事情，而真正的异步IO能让你第二步的过程也能去做其它事情.
+
+### （五）linux使用
 
 1. CPU占用过高排查
 
-   （1）top
-
-   （2）ps -ef | grep java或者jps定位
-
-   （3）定位到具体的线程：ps -mp 进程 -o THREAD,tid,time
-
-   （4）将线程ID转换为16进制的格式：print "%x\n" 数字
-
-   （5）jstack 进程id | grep tid（16进制线程id的小写）-A60
+   >（1）top
+   >
+   >（2）ps -ef | grep java或者jps定位
+   >
+   >（3）定位到具体的线程：ps -mp 进程 -o THREAD,tid,time
+   >
+   >（4）将线程ID转换为16进制的格式：print "%x\n" 数字
+   >
+   >（5）jstack 进程id | grep tid（16进制线程id的小写）-A60
 
 2. 补充：
 
@@ -772,17 +812,510 @@
 
 ### （一）基础
 
+1. 泛型？
+
 ### （二）容器
 
 1. HashMap的遍历？
 
 ### （三）并发
 
+1. Java 并发包提供了哪些并发工具类？
+
+   (1)提供了比 synchronized 更加高级的各种同步结构
+
+   > 包括 CountDownLatch、CyclicBarrier、Sempahore 等，可以实现更加丰富的多线程操作，比如利用 Semaphore 作为资源控制器，限制同时进行工作的线程数量。
+   >
+   > > - CountDownLatch，允许一个或多个线程等待某些操作完成
+   > >
+   > > - CyclicBarrier，一种辅助性的同步结构，允许多个线程等待到达某个屏障
+   > >
+   > > > - CountDownLatch 是不可以重置的，所以无法重用；而 CyclicBarrier 则没有这种限制，可以重用。
+   > > > - CountDownLatch 的基本操作组合是 countDown/await。调用 await 的线程阻塞等待countDown 足够的次数，不管你是在一个线程还是多个线程里 countDown，只要次数足够即可。所以就像 Brain Goetz 说过的，CountDownLatch 操作的是事件。
+   > > > - CyclicBarrier 的基本操作组合，则就是 await，当所有的伙伴（parties）都调用了 await，才会继续进行任务，并自动进行重置。
+   > >
+   > > - Semaphore，Java 版本的信号量实现,总的来说，Semaphore 就是个计数器，其基本逻辑基于 acquire/release.
+
+   (2)各种线程安全的容器
+
+   > 比如最常见的 ConcurrentHashMap、有序的ConcunrrentSkipListMap，或者通过类似快照机制，实现线程安全的动态数组CopyOnWriteArrayList 等。
+   >
+   > > Concurrent
+   > >
+   > > CopyOnWrite
+   > >
+   > > Blocking
+
+   (3)并发队列实现
+
+   > 如各种 BlockedQueue 实现，比较典型的 ArrayBlockingQueue、SynchorousQueue 或针对特定场景的 PriorityBlockingQueue 等。
+
+   (4)强大的 Executor 框架
+
+   > 可以创建各种不同类型的线程池，调度任务运行等，绝大部分情况下，不再需要自己从头实现线程池和任务调度器
+
+2. 哪些队列是有界的，哪些是无界的？从源码的角度，常见的线程安全队列是如何实现的，并进行了哪些改进以提高性能表现？
+
+   (1)有界or无界
+
+   > - ArrayBlockingQueue 是最典型的的有界队列，其内部以 final 的数组保存数据，数组的大小就决定了队列的边界，所以我们在创建 ArrayBlockingQueue 时，都要指定容量
+   > - LinkedBlockingQueue，容易被误解为无边界，但其实其行为和内部代码都是基于有界的逻辑实现的，只不过如果我们没有在创建队列时就指定容量，那么其容量限制就自动被设置为
+   >   Integer.MAX_VALUE，成为了无界队列。
+   > - SynchronousQueue，每个删除操作都要等待插入操作，反之每个插入操作也都要等待删除动作。那么这个队列的容量是多少呢？是 1 吗？其实不是的，其内部容量是 0。
+   > - PriorityBlockingQueue 是无边界的优先队列，虽然严格意义上来讲，其大小总归是要受系统资源影响
+   > - DelayedQueue 和 LinkedTransferQueue 同样是无边界的队列。
+
+   (2)安全?
+
+   > - BlockingQueue 基本都是基于锁实现
+   > - 类似 ConcurrentLinkedQueue 等，则是基于 CAS 的无锁技术，不需要在每个操作时使用锁，所以扩展性表现要更加优异
+
+3. 使用Blocking 的队列实现典型的生产者 - 消费者?
+
 ### （四）JVM
 
 ### （五）I/O
+
+1. InputStream,OutputStream,Reader,Writer？
+
+   > - InputStream,OutputStream:面向字节流
+   >
+   > - Reader,Writer:面向字符流
+   >
+   > > 操作对象(文件,数组,基本数据类型,缓冲,管道,打印,对象序列化,转化)
+   > >
+   > > - (1)文件
+   > >
+   > > > FileInputStream
+   > > > FileOutputStream
+   > > > FileReader
+   > > > FileWriter
+   > >
+   > > - (2)数组
+   > >
+   > > > ByteArrayInputStream
+   > > > ByteArrayOutputStream
+   > > > CharArrayReader
+   > > > CharArrayWriter
+   > >
+   > > - (3)基本数据类型
+   > >
+   > > > DataInputStream
+   > > > DataOutputStream
+   > >
+   > > - (4)缓冲
+   > >
+   > > > BufferedInputStream
+   > > > BufferedOutputStream
+   > > > BufferedReader
+   > > > BufferedWriter
+   > >
+   > > - (5)管道
+   > >
+   > > > PipedInputStream
+   > > > PipedOutputStream
+   > > > PipedReader
+   > > > PipedWriter
+   > >
+   > > - (6)打印
+   > >
+   > > > printStream
+   > > > printWriter
+   > >
+   > > - (7)对象序列化
+   > >
+   > > > ObjectInputStream
+   > > > ObjectOutputStream
+   > >
+   > > - (8)转化
+   > >
+   > > > InputStreamReader
+   > > > OutputStreamWriter
+
+2. I/O
+
+   - Files
+   - Pipes
+   - Network Connections
+   - In-memory Buffers (e.g. arrays)
+   - System.in, System.out, System.error
+
+3. Java NIO和IO之间第一个最大的区别是，IO是面向流的，NIO是面向缓冲区的
+
+   | IO              | NIO             |
+   | --------------- | --------------- |
+   | Stream oriented | Buffer oriented |
+   | Blocking IO     | No blocking IO  |
+   |                 | Selectors       |
+
+   > 面向流和面向缓冲区比较(Stream Oriented vs. Buffer Oriented)
+   >
+   > > 第一个重大差异是IO是面向流的，而NIO是面向缓存区的。这句话是什么意思呢？
+   > >
+   > > Java IO面向流意思是我们每次从流当中读取一个或多个字节。怎么处理读取到的字节是我们自己的事情。他们不会再任何地方缓存。再有就是我们不能在流数据中向前后移动。如果需要向前后移动读取位置，那么我们需要首先为它创建一个缓存区。
+   > >
+   > > Java NIO是面向缓冲区的，这有些细微差异。数据是被读取到缓存当中以便后续加工。我们可以在缓存中向向后移动。这个特性给我们处理数据提供了更大的弹性空间。当然我们任然需要在使用数据前检查缓存中是否包含我们需要的所有数据。另外需要确保在往缓存中写入数据时避免覆盖了已经写入但是还未被处理的数据。
+   >
+   > 阻塞和非阻塞IO比较（Blocking vs. No-blocking IO）
+   >
+   > > Java IO的各种流都是阻塞的。这意味着一个线程一旦调用了read(),write()方法，那么该线程就被阻塞住了，知道读取到数据或者数据完整写入了。在此期间线程不能做其他任何事情。
+   > >
+   > > Java NIO的非阻塞模式使得线程可以通过channel来读数据，并且是返回当前已有的数据，或者什么都不返回如果但钱没有数据可读的话。这样一来线程不会被阻塞住，它可以继续向下执行。
+   > >
+   > > 通常线程在调用非阻塞操作后，会通知处理其他channel上的IO操作。因此一个线程可以管理多个channel的输入输出。
+
+4. NIO和AIO的对比？
+
+   > - NIO是同步非阻塞的，AIO是异步非阻塞的
+   > - 由于NIO的读写过程依然在应用线程里完成，所以对于那些读写过程时间长的，NIO就不太适合。而AIO的读写过程完成后才被通知，所以AIO能够胜任那些重量级，读写过程长的任务。
+
+5. NIO:http://wiki.jikexueyuan.com/project/java-nio-zh/java-nio-non-blocking-server.html
+
+6. 有很多的Channel，Buffer,Seletor?
+
+   (1)Channel
+
+   > - FileChannel
+   >
+   > > 在Java NIO中如果一个channel是FileChannel类型的，那么他可以直接把数据传输到另一个channel。逐个特性得益于FileChannel包含的transferTo和transferFrom两个方法。
+   > >
+   > > > transferFrom():FileChannel.transferFrom方法把数据从通道源传输到FileChannel：
+   > > >
+   > > > ```java
+   > > > RandomAccessFile fromFile = new RandomAccessFile("fromFile.txt", "rw");
+   > > > FileChannel      fromChannel = fromFile.getChannel();
+   > > > 
+   > > > RandomAccessFile toFile = new RandomAccessFile("toFile.txt", "rw");
+   > > > FileChannel      toChannel = toFile.getChannel();
+   > > > 
+   > > > long position = 0;
+   > > > long count    = fromChannel.size();
+   > > > 
+   > > > toChannel.transferFrom(fromChannel, position, count);
+   > > > ```
+   > > >
+   > > > transferTo():transferTo方法把FileChannel数据传输到另一个channel,下面是案例：
+   > > >
+   > > > ```java
+   > > > RandomAccessFile fromFile = new RandomAccessFile("fromFile.txt", "rw");
+   > > > FileChannel      fromChannel = fromFile.getChannel();
+   > > > 
+   > > > RandomAccessFile toFile = new RandomAccessFile("toFile.txt", "rw");
+   > > > FileChannel      toChannel = toFile.getChannel();
+   > > > 
+   > > > long position = 0;
+   > > > long count    = fromChannel.size();
+   > > > 
+   > > > fromChannel.transferTo(position, count, toChannel);
+   > > > ```
+   >
+   > - DatagramChannel
+   > - SocketChannel
+   > - ServerSocketChannel
+   >
+   > > FileChannel用于文件的数据读写。
+   > > DatagramChannel用于UDP的数据读写。
+   > > SocketChannel用于TCP的数据读写。
+   > > ServerSocketChannel允许我们监听TCP链接请求，每个请求会创建会一个SocketChannel.
+
+   (2)Buffer(7)
+
+   > - ByteBuffer
+   > - MappedBytesBuffer,一般用于和内存映射的文件。
+   > - CharBuffer
+   > - DoubleBuffer
+   > - FloatBuffer
+   > - IntBuffer
+   > - LongBuffer
+   > - ShortBuffer
+   >
+   > > 利用Buffer读写数据，通常遵循四个步骤：
+   > >
+   > > - 把数据写入buffer；
+   > > - 调用flip；
+   > > - 从Buffer中读取数据；
+   > > - 调用buffer.clear()或者buffer.compact(), clear会清空整个buffer，compact则只清空已读取的数据
+   >
+   > 一个Buffer有三个属性是必须掌握的，分别是：
+   >
+   > > - capacity容量
+   > > - position位置
+   > > - limit限制
+   >
+   > 分配一个Buffer（Allocating a Buffer）
+   >
+   > > ```
+   > > ByteBuffer buf = ByteBuffer.allocate(48);
+   > > ```
+   >
+   > 写入数据到Buffer（Writing Data to a Buffer）
+   >
+   > > - 从Channel中写数据到Buffer
+   > > - 手动写数据到Buffer，调用put方法
+   > >
+   > > > ```
+   > > > int bytesRead = inChannel.read(buf); //read into buffer.
+   > > > ```
+   > > >
+   > > > ```
+   > > > buf.put(127);    
+   > > > ```
+   >
+   > 翻转flip()
+   >
+   > > flip()方法可以吧Buffer从写模式切换到读模式。调用flip方法会把position归零，并设置limit为之前的position的值。也就是说，现在position代表的是读取位置，limit标示的是已写入的数据位置。
+   >
+   > 从Buffer读取数据（Reading Data from a Buffer）
+   >
+   > > - 从buffer读数据到channel
+   > > - 从buffer直接读取数据，调用get方法
+   > >
+   > > ```
+   > > //read from buffer into channel.
+   > > int bytesWritten = inChannel.write(buf);
+   > > byte aByte = buf.get();
+   > > ```
+   >
+   > rewind()
+   >
+   > > Buffer.rewind()方法将position置为0，这样我们可以重复读取buffer中的数据。limit保持不变。
+   >
+   > clear() and compact()
+   >
+   > > 一旦我们从buffer中读取完数据，需要复用buffer为下次写数据做准备。只需要调用clear或compact方法。
+   > >
+   > > clear方法会重置position为0，limit为capacity，也就是整个Buffer清空。实际上Buffer中数据并没有清空，我们只是把标记为修改了。
+   > >
+   > > 如果Buffer还有一些数据没有读取完，调用clear就会导致这部分数据被“遗忘”，因为我们没有标记这部分数据未读。
+   > >
+   > > 针对这种情况，如果需要保留未读数据，那么可以使用compact。 因此compact和clear的区别就在于对未读数据的处理，是保留这部分数据还是一起清空。
+   >
+   > mark() and reset()
+   >
+   > > 通过mark方法可以标记当前的position，通过reset来恢复mark的位置，这个非常像canva的save和restore：
+   > >
+   > > ```
+   > > buffer.mark();
+   > > 
+   > > //call buffer.get() a couple of times, e.g. during parsing.
+   > > 
+   > > buffer.reset();  //set position back to mark.    
+   > > ```
+
+   (3) Java NIO Selector选择器
+
+   > Selector是Java NIO中的一个组件，用于检查一个或多个NIO Channel的状态是否处于可读、可写。如此可以实现单线程管理多个channels,也就是可以管理多个网络链接。
+   >
+   > 创建一个Selector可以通过Selector.open()方法：
+   >
+   > > ```java
+   > > Selector selector = Selector.open();
+   > > ```
+   >
+   > 注册Channel到Selector上(Registering Channels with the Selector)
+   >
+   > > ```java
+   > > channel.configureBlocking(false);
+   > > SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
+   > > ```
+   > >
+   > > register第二个参数，有四种基础类型可供监听：
+   > >
+   > > - Connect------------------->SelectionKey.OP_CONNECT
+   > >
+   > > - Accept--------------------->SelectionKey.OP_ACCEPT
+   > >
+   > > - Read------------------------>SelectionKey.OP_READ
+   > >
+   > > - Write------------------------>SelectionKey.OP_WRITE
+   > >
+   > > 一个channel触发了一个事件也可视作该事件处于就绪状态。因此当channel与server连接成功后，那么就是“连接就绪”状态。server channel接收请求连接时处于“可连接就绪”状态。channel有数据可读时处于“读就绪”状态。channel可以进行数据写入时处于“写就绪”状态。
+   > >
+   > > ```java
+   > > int interestSet = SelectionKey.OP_READ | SelectionKey.OP_WRITE;
+   > > ```
+   > >
+   > > SelectionKeys包含了的属性
+   > >
+   > > - The interest set
+   > > - The ready set
+   > > - The Channel
+   > > - The Selector
+   > > - An attached object (optional)
+   > >
+   > > > **Interest Set**
+   > > >
+   > > > 这个“关注集合”实际上就是我们希望处理的事件的集合，它的值就是注册时传入的参数，我们可以用按为与运算把每个事件取出来
+   > > >
+   > > > ```java
+   > > > int interestSet = selectionKey.interestOps();
+   > > > 
+   > > > boolean isInterestedInAccept  = interestSet & SelectionKey.OP_ACCEPT;
+   > > > boolean isInterestedInConnect = interestSet & SelectionKey.OP_CONNECT;
+   > > > boolean isInterestedInRead    = interestSet & SelectionKey.OP_READ;
+   > > > boolean isInterestedInWrite   = interestSet & SelectionKey.OP_WRITE; 
+   > > > ```
+   > > >
+   > > > **Ready Set**
+   > > >
+   > > > "就绪集合"中的值是当前channel处于就绪的值，一般来说在调用了select方法后都会需要用到就绪状态
+   > > >
+   > > > ```java
+   > > > selectionKey.isAcceptable();
+   > > > selectionKey.isConnectable();
+   > > > selectionKey.isReadable();
+   > > > selectionKey.isWritable();
+   > > > ```
+   > > >
+   > > > **Channel + Selector**
+   > > >
+   > > > ```java
+   > > > Channel  channel  = selectionKey.channel();
+   > > > Selector selector = selectionKey.selector();   
+   > > > ```
+   > > >
+   > > > **Attaching Objects**
+   > > >
+   > > > 我们可以给一个SelectionKey附加一个Object，这样做一方面可以方便我们识别某个特定的channel，同时也增加了channel相关的附加信息。例如，可以把用于channel的buffer附加到SelectionKey上：
+   > > >
+   > > > ```java
+   > > > selectionKey.attach(theObject);
+   > > > 
+   > > > Object attachedObj = selectionKey.attachment();
+   > > > ```
+   > > >
+   > > > 附加对象的操作也可以在register的时候就执行：
+   > > >
+   > > > ```java
+   > > > SelectionKey key = channel.register(selector, SelectionKey.OP_READ, theObject);
+   > > > ```
+   >
+   > 从Selector中选择channel(Selecting Channels via a Selector)
+   >
+   > > - int select()
+   > > - int select(long timeout)
+   > > - int selectNow()
+   >
+   > selectedKeys()
+   >
+   > > 在调用select并返回了有channel就绪之后，可以通过选中的key集合来获取channel，这个操作通过调用selectedKeys()方法
+   >
+   > wakeUp()
+   >
+   > close()
+
+   (4)主要步骤和元素
+
+   > - 首先，通过 Selector.open() 创建一个 Selector，作为类似调度员的角色。
+   > - 然后，创建一个 ServerSocketChannel，并且向 Selector 注册，通过指定SelectionKey.OP_ACCEPT，告诉调度员，它关注的是新的连接请求。注意，为什么我们要明确配置非阻塞模式呢？这是因为阻塞模式下，注册操作是不允许的，会抛出 IllegalBlockingModeException 异常。
+   > - Selector 阻塞在 select 操作，当有 Channel 发生接入请求，就会被唤醒。
+   > - 通过 SocketChannel 和 Buffer 进行数据操作，在本例中是发送了一段字符串。
+
+7. Java NIO Channel通道和流非常相似，主要有以下几点区别?
+
+   > - 通道可以读也可以写，流一般来说是单向的（只能读或者写）。
+   > - 通道可以异步读写。
+   > - 通道总是基于缓冲区Buffer来读写。
+
+8. SocketChannel ,  ServerSocketChannel
+
+   |      | SocketChannel                                               | ServerSocketChannel                |
+   | ---- | ----------------------------------------------------------- | ---------------------------------- |
+   | 方法 | open();    close();    write();      read();     connect(); | open();     close();     accept(); |
+
+   
+
+9. [AsynchronousChannel](https://docs.oracle.com/javase/8/docs/api/java/nio/channels/AsynchronousChannel.html)
+
+   (1)read
+
+   - A
+
+   ![](./images/io/aio_read_1.png)
+
+   - B
+
+   ![](./images/io/aio_read_2.png)
+
+   (2)write
+
+   - A
+
+   ![](./images/io/aio_write_1.png)
+
+   - B
+
+   ![](./images/io/aio_write_2.png)
+
+10. 什么是Java序列化，如何实现Java序列化？
+
+11. Java有几种文件拷贝方式？哪一种最高效？
+
+    (1)利用 java.io 类库，直接为源文件构建一个 FileInputStream 读取，然后再为目标文件构建一个FileOutputStream，完成写入工作.
+
+    (2)利用 java.nio 类库提供的 transferTo 或 transferFrom 方法实现。
+
+    (3)Java 标准类库本身提供了几种 Files.copy 的实现。（java.nio.file.Files.copy）
+
+    ![](./images/io/nio_copy.png)
+
+    > 对于 Copy 的效率，这个其实与操作系统和配置等情况相关，总体上来说，NIO transferTo/From 的方式可能更快，因为它更能利用现代操作系统底层机制，避免不必要拷贝
+    > 和上下文切换。
+
+12. Reactor, Proactor?
+
+13. Netty
 
 ### （六）Java 8
 
 ## 六、Spring
 ## 七、Docker
+
+## 八、Redis高并发
+
+1. Redis的高并发和快速原因？
+
+   >（1）Redis是基于内存的，内存的读写速度非常快；
+   >
+   >（2）Redis是单线程的，省去了很多上下文切换线程的时间；
+   >
+   >（3）Redis使用多路复用技术，可以处理并发的连接。非阻塞IO 内部实现采用epoll，采用了epoll+自己实现的简单的事件框架。epoll中的读、写、关闭、连接都转化成了事件，然后利用epoll的多路复用特性，绝不在io上浪费一点时间。
+
+2. 为什么Redis是单线程的？
+
+   >（1）官方答案
+   >
+   >因为Redis是基于内存的操作，CPU不是Redis的瓶颈，Redis的瓶颈最有可能是机器内存的大小或者网络带宽。既然单线程容易实现，而且CPU不会成为瓶颈，那就顺理成章地采用单线程的方案了。
+   >
+   >（2）性能指标
+   >
+   >关于redis的性能，官方网站也有，普通笔记本轻松处理每秒几十万的请求。
+   >
+   >（3）详细原因
+   >
+   >- 不需要各种锁的性能消耗
+   >
+   >> Redis的数据结构并不全是简单的Key-Value，还有list，hash等复杂的结构，这些结构有可能会进行很细粒度的操作，比如在很长的列表后面添加一个元素，在hash当中添加或者删除一个对象。这些操作可能就需要加非常多的锁，导致的结果是同步开销大大增加。总之，在单线程的情况下，就不用去考虑各种锁的问题，不存在加锁释放锁操作，没有因为可能出现死锁而导致的性能消耗。
+   >
+   >- 单线程多进程集群方案
+   >
+   >> 单线程的威力实际上非常强大，每核心效率也非常高，多线程自然是可以比单线程有更高的性能上限，但是在今天的计算环境中，即使是单机多线程的上限也往往不能满足需要了，需要进一步摸索的是多服务器集群化的方案，这些方案中多线程的技术照样是用不上的。所以单线程、多进程的集群不失为一个时髦的解决方案。
+   >
+   >- CPU消耗
+   >
+   >> 采用单线程，避免了不必要的上下文切换和竞争条件，也不存在多进程或者多线程导致的切换而消耗 CPU。
+
+3. Redis支持的数据结构？
+
+   (1)String
+
+   (2)List
+
+   (3)Map
+
+   (4)Set
+
+   (5)ZSet
+
+## 九、kafka
+
