@@ -797,6 +797,10 @@
      - `软中断`：由程序中执行了引起中断的指令而造成的中断（这也是和我们将要说明的系统调用相关的中断）；
      - `外部中断`：由外部设备请求引起的中断，比如I/O请求。
    - 系统调用：进程的执行在系统上的两个级别：用户级和核心级，也称为`用户态`和`系统态`(`user mode` and `kernel mode`)。**程序的执行一般是在用户态下执行的，但当程序需要使用操作系统提供的服务时，比如说打开某一设备、创建文件、读写文件等，就需要向操作系统发出调用服务的请求，这就是系统调用**。
+   
+3. awk命令的使用？
+
+   
 
 ## 三、数据结构
 
@@ -814,13 +818,133 @@
 
 1. 泛型？
 
+2. 内部类？（成局静匿）
+
+   （1）成员内部类
+
+   > 一个类定义在一个类的内部，看起来像类的成员。
+   >
+   > > 问题：
+   > >
+   > > - 有隐藏的问题
+   > > - 访问：成员内部类可以无条件地访问外部类的成员，而外部类想访问成员内部类的成员却不是这么随心所欲了。在外部类中如果要访问成员内部类的成员，必须先创建一个成员内部类的对象，再通过指向这个对象的引用来访问
+
+   （2）局部内部类
+
+   > 定义在方法或者是一个作用域内，和成员内部类的区别在于访问权限上。
+   >
+   > > 问题：
+   > >
+   > > - 局部内部类是定义在一个方法或者一个作用域里面的类，它和成员内部类的区别在于局部内部类的访问仅限于方法内或者该作用域内。
+   > > - 是不能有 public、protected、private 以及 static 修饰符的。
+
+   （3）静态内部类
+
+   > 静态内部类也是定义在另一个类里面的类，只不过在类的前面多了一个关键字static。静态内部类是不需要依赖于外部类的，这点和类的静态成员属性有点类似，`并且它不能使用外部类的非static成员变量或者方法`
+   >
+   > > - 静态内部类是不依赖于外部类的，也就说可以在不创建外部类对象的情况下创建内部类的对象。
+
+   （4）匿名内部类
+
+   > 一般使用匿名内部类的方法来编写事件监听代码。同样的，匿名内部类也是不能有访问修饰符和 static 修饰符的。
+
 ### （二）容器
 
 1. HashMap的遍历？
 
 ### （三）并发
 
-1. Java 并发包提供了哪些并发工具类？
+1. 线程的实现方式？怎么使用lambda的形式？
+
+   （1）Thread------------run()方法
+
+   （2）Runnable------------run()方法
+
+   （3）Callable----------call()----------FutureTask
+
+   ```java
+   package JavaBasic;
+   
+   import java.util.concurrent.Callable;
+   import java.util.concurrent.ExecutionException;
+   import java.util.concurrent.FutureTask;
+   
+   /**
+    * @Classname ThreadTest
+    * @Description 多线程的三种实现方式
+    * @Date 19-7-22 上午9:30
+    * @Created by mao<tianmao818@qq.com>
+    */
+   
+   class MyThread1 extends Thread{
+       @Override
+       public void run(){
+           System.out.println("thread by extends Thread");
+       }
+   }
+   
+   class MyThread2 implements Runnable{
+       @Override
+       public void run(){
+           System.out.println("thread by implements Runnable");
+       }
+   }
+   
+   class MyThread3 implements Callable{
+       @Override
+       public String call() throws Exception{
+           return "thread by implements Callable";
+       }
+   }
+   
+   public class ThreadTest {
+       public static void main(String[] args){
+           MyThread1 myThread1=new MyThread1();
+           myThread1.start();
+   
+           MyThread2 myThread2=new MyThread2();
+           new Thread(myThread2).start();
+           
+           //FutureTask的使用
+           //Future类的使用
+           FutureTask<String> futureTask=new FutureTask<>(new MyThread3());
+           new Thread(futureTask).start();
+           try {
+               String res=futureTask.get();
+               System.out.println(res);
+           } catch (InterruptedException e) {
+               e.printStackTrace();
+           } catch (ExecutionException e) {
+               e.printStackTrace();
+           }
+       }
+   }
+   ```
+
+   (4)使用匿名内部类
+
+   ```java
+           new Thread(()->{
+               System.out.println(Thread.currentThread()+"thread by lambda");
+           }).start();
+   
+           new Thread() {
+               public void run() {
+                   System.out.println(Thread.currentThread()+"thread by 1");
+               }
+           }.start();
+   
+           Runnable r = new Runnable() {//创建方式2
+               public void run() {
+                   System.out.println(Thread.currentThread()+"thread by 2");
+               }
+           };
+           new Thread(r).start();
+   ```
+
+   
+
+2. Java 并发包提供了哪些并发工具类？
 
    (1)提供了比 synchronized 更加高级的各种同步结构
 
@@ -854,7 +978,7 @@
 
    > 可以创建各种不同类型的线程池，调度任务运行等，绝大部分情况下，不再需要自己从头实现线程池和任务调度器
 
-2. 哪些队列是有界的，哪些是无界的？从源码的角度，常见的线程安全队列是如何实现的，并进行了哪些改进以提高性能表现？
+3. 哪些队列是有界的，哪些是无界的？从源码的角度，常见的线程安全队列是如何实现的，并进行了哪些改进以提高性能表现？
 
    (1)有界or无界
 
@@ -870,7 +994,466 @@
    > - BlockingQueue 基本都是基于锁实现
    > - 类似 ConcurrentLinkedQueue 等，则是基于 CAS 的无锁技术，不需要在每个操作时使用锁，所以扩展性表现要更加优异
 
-3. 使用Blocking 的队列实现典型的生产者 - 消费者?
+4. 生产者 - 消费者?
+
+   （1）传统版synchronized: sync--------------->wait------------->notify
+
+   （2）传统版lock： lock---------->await---------->Signal
+
+   （3）阻塞队列
+
+   > ```
+   > * 1 线程    操作   资源类
+   > * 2 判断    干活   通知
+   > * 3 虚假唤醒
+   > ```
+
+   ```java
+   package JavaDemo.MultiThreadTest;
+   
+   /**
+    * @Author MaoTian
+    * @Classname ProducerConsumerSync
+    * @Description TODO
+    * @Date 上午8:48 2019/8/9
+    * @Version 1.0
+    * @Created by mao<tianmao818@qq.com>
+    */
+   class ShareSource{
+       private int number=0;
+       public synchronized void increment()throws InterruptedException{
+           while (number!=0){
+               this.wait();
+           }
+           ++number;
+           System.out.println(Thread.currentThread().getName()+"\t"+number);
+           this.notifyAll();
+       }
+       public synchronized void decrement()throws InterruptedException{
+           while (number==0){
+               this.wait();
+           }
+           --number;
+           System.out.println(Thread.currentThread().getName()+"\t"+number);
+           this.notifyAll();
+       }
+   }
+   public class ProducerConsumerSync {
+       public static void main(String[] args) {
+           ShareSource shareSource=new ShareSource();
+           new Thread(()->{
+               for (int i = 0; i <10 ; i++) {
+                   try {
+                       shareSource.increment();
+                   }catch (Exception e){
+   
+                   }
+               }
+           },"producer-1").start();
+           new Thread(()->{
+               for (int i = 0; i <10 ; i++) {
+                   try {
+                       shareSource.decrement();
+                   }catch (Exception e){
+   
+                   }
+               }
+           },"consumer-1").start();
+       }
+   }
+   
+   ```
+
+   
+
+   ```java
+   class ShareData{
+       private int number=0;
+       private Lock lock=new ReentrantLock();
+       private Condition condition=lock.newCondition();
+       public void increment()throws Exception{
+           lock.lock();
+           try{
+               //判断,不能够使用if判断，必须使用while判断
+               while (number!=0){
+                   //等待
+                   condition.await();
+               }
+               //干活
+               number++;
+               System.out.println(Thread.currentThread().getName()+":"+number);
+               //通知
+               condition.signalAll();
+           }catch (Exception e){
+           }finally {
+               lock.unlock();
+           }
+       }
+       public void decrement()throws Exception{
+           lock.lock();
+           try{
+               //判断
+               while (number==0){
+                   //等待
+                   condition.await();
+               }
+               //干活
+               number--;
+               System.out.println(Thread.currentThread().getName()+":"+number);
+               //通知
+               condition.signalAll();
+           }catch (Exception e){
+           }finally {
+               lock.unlock();
+           }
+       }
+   }
+   public class ProducerConsumerTraditional {
+       public static void main(String[] args) {
+           ShareData shareData=new ShareData();
+           new Thread(()->{
+               for (int i = 0; i < 5; i++) {
+                   try {
+                       shareData.increment();
+                   } catch (Exception e) {
+                       e.printStackTrace();
+                   }
+               }
+           },"producer").start();
+   
+           new Thread(()->{
+               for (int i = 0; i < 5; i++) {
+                   try {
+                       shareData.decrement();
+                   } catch (Exception e) {
+                       e.printStackTrace();
+                   }
+               }
+           },"consumer").start();
+       }
+   }
+   ```
+
+   ```java
+   package JavaDemo.MultiThreadTest;
+   
+   import java.util.concurrent.ArrayBlockingQueue;
+   import java.util.concurrent.BlockingQueue;
+   import java.util.concurrent.TimeUnit;
+   import java.util.concurrent.atomic.AtomicInteger;
+   
+   /**
+    * @Author MaoTian
+    * @Classname ProducerConsumerBlockingQueue
+    * @Description 使用阻塞队列，生产一个消费一个
+    * @Date 下午8:51 2019/8/8
+    * @Version 1.0
+    * @Created by mao<tianmao818@qq.com>
+    */
+   
+   class Resource{
+       private volatile boolean FLAG=true; //可见性
+       private AtomicInteger atomicInteger=new AtomicInteger();//原子类
+       BlockingQueue<String> blockingQueue=null;//阻塞队列
+   
+       public Resource(BlockingQueue<String> blockingQueue){
+           this.blockingQueue=blockingQueue;
+           System.out.println(blockingQueue.getClass().getName());
+       }
+       public void myProd()throws Exception{
+           String data=null;
+           boolean retvalue;
+           while (FLAG){
+               data=atomicInteger.incrementAndGet()+"";
+               retvalue=blockingQueue.offer(data,2L, TimeUnit.SECONDS);
+               if(retvalue){
+                   System.out.println(Thread.currentThread()+":insert ok "+data);
+               }else{
+                   System.out.println(Thread.currentThread()+":insert fail");
+               }
+   //            TimeUnit.SECONDS.sleep(1);
+           }
+           System.out.println(Thread.currentThread()+":producer stop");
+       }
+   
+       public void myCons()throws Exception{
+           String result;
+           while (FLAG){
+               result=blockingQueue.poll(2L, TimeUnit.SECONDS);
+               if(null==result||result.equalsIgnoreCase("")){
+                   FLAG=false;
+                   System.out.println(Thread.currentThread()+":consumer stop");
+                   return;
+               }
+               System.out.println(Thread.currentThread()+":consume ok "+result);
+           }
+       }
+   
+       public void stop(){
+           this.FLAG=false;
+       }
+   }
+   public class ProducerConsumerBlockingQueue {
+       public static void main(String[] args) throws InterruptedException {
+           Resource resource=new Resource(new ArrayBlockingQueue<>(10));
+           new Thread(()->{
+               System.out.println(Thread.currentThread().getName()+" producer start");
+               try {
+                   resource.myProd();
+               }catch (Exception e){
+   
+               }
+           },"producer").start();
+           new Thread(()->{
+               System.out.println(Thread.currentThread().getName()+" consumer start");
+               try {
+                   resource.myCons();
+               }catch (Exception e){
+   
+               }
+           },"consumer").start();
+   
+           TimeUnit.SECONDS.sleep(5);
+           resource.stop();
+       }
+   }
+   
+   ```
+
+5. synchronized和lock的区别？用lock的好处？
+
+   | 区别           | synchronized                                                 | lock                                                         |
+   | -------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+   | 原始构成       | （关键字）jvm层面，底层通过monitor对象来完成，monitorenter和monitorexit（两个monitorexit） | （具体类）Lock是具体的类（java.concurrent.locks.Lock）,是api层面的锁（使用java p） |
+   | 使用方法       | 自动释放                                                     | 需要使用try、finally释放                                     |
+   | 等待是否可中断 | 不可以被中断                                                 | 可以被中断                                                   |
+   | 加锁是否公平   | 非公平锁                                                     | 默认是非公平锁，构造函数传参，true公平，false非公平          |
+   | 锁绑定多个条件 | 没有                                                         | 可以用来实现分组唤醒需要唤醒的线程，可以精确唤醒，synchronized随机唤醒一个或者多个 |
+
+   ```java
+   import java.util.concurrent.locks.Condition;
+   import java.util.concurrent.locks.Lock;
+   import java.util.concurrent.locks.ReentrantLock;
+   
+   /**
+    * @Author MaoTian
+    * @Classname SyncAndLockCondition
+    * @Description lock可以绑定多个condition，可以精确唤醒A-B-C-D-A
+    * @Date 下午8:23 2019/8/8
+    * @Version 1.0
+    * @Created by mao<tianmao818@qq.com>
+    */
+   class ShareResource{
+       private int number=0; //A=1,B=2,C=3
+       //
+       private Lock lock=new ReentrantLock();
+       private Condition c1=lock.newCondition();
+       private Condition c2=lock.newCondition();
+       private Condition c3=lock.newCondition();
+       //
+       public void print_5(){
+           lock.lock();
+           try {
+               while (number!=0){
+                   c1.await();
+               }
+               for (int i = 0; i <5 ; i++) {
+                   System.out.println(Thread.currentThread()+":"+number);
+               }
+               number=1;
+               c2.signal();
+           }catch (Exception e){
+           }finally {
+               lock.unlock();
+           }
+       }
+       //
+       public void print_10(){
+           lock.lock();
+           try {
+               while (number!=1){
+                   c2.await();
+               }
+               for (int i = 0; i <10 ; i++) {
+                   System.out.println(Thread.currentThread()+":"+number);
+               }
+               number=2;
+               c3.signal();
+           }catch (Exception e){
+           }finally {
+               lock.unlock();
+           }
+       }
+       public void print_15(){
+           lock.lock();
+           try {
+               while (number!=2){
+                   c3.await();
+               }
+               for (int i = 0; i <15 ; i++) {
+                   System.out.println(Thread.currentThread()+":"+number);
+               }
+               number=0;
+               c1.signal();
+           }catch (Exception e){
+   
+           }finally {
+               lock.unlock();
+           }
+       }
+   }
+   public class SyncAndLockCondition {
+       public static void main(String[] args) {
+           ShareResource shareResource=new ShareResource();
+           new Thread(()->{
+               for (int i = 0; i <10 ; i++) {
+                   shareResource.print_5();
+               }
+           }).start();
+           new Thread(()->{
+               for (int i = 0; i <10 ; i++) {
+                   shareResource.print_10();
+               }
+           }).start();
+           new Thread(()->{
+               for (int i = 0; i <10 ; i++) {
+                   shareResource.print_15();
+               }
+           }).start();
+       }
+   }
+   
+   ```
+
+6. JUC主要包含的内容？[[透彻理解Java并发编程](https://segmentfault.com/blog/ressmix_multithread)](https://segmentfault.com/blog/ressmix_multithread)
+
+   （1）概览
+
+   ![](images/juc/juc.png)
+
+   - CopyOnWrite*(List,Set)
+
+   ![](images/juc/copyonwrite.png)
+
+   - Concurrent*(SkipListSet,SkipListMap,Map,LinkedQueue)
+
+     ![](images/juc/concurrent.png)
+
+   - Blocking*(Queue, Deque)(Array,Linked,Priority)
+
+   ![](images/juc/blocking.png)
+
+   
+
+   (2)并发容器
+
+   | List，Set                                                    | Map                                            | Queue                                                        |
+   | ------------------------------------------------------------ | ---------------------------------------------- | ------------------------------------------------------------ |
+   | CopyOnWriteArrayList<br>CopyOnWriteArraySet<br>ConcurrentSkipListSet<br> | ConcurrentHashMap<br>ConcurrentSkipListMap<br> | ArrayBlockingQueue<br>LinkedBlockingQueue<br>ConcurrentLinkedQueue<br>ConcurrentLinkedDeque<br> |
+
+   | 类                    | ji(Ctrl+H,Alt+7)                                             | 并发                                                         |                                            |
+   | --------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ | ------------------------------------------ |
+   | CopyOnWriteArrayList  | Cloneable (java.lang)<br/>List (java.util)<br/>    Collection (java.util)<br/>        Iterable (java.lang)<br/>Object (java.lang)<br/>RandomAccess (java.util)<br/>Serializable (java.io) | ![](images/juc/CopyOnWriteArrayList.png)                     | ReentrantLock                              |
+   | CopyOnWriteArraySet   | AbstractSet (java.util)<br/>    AbstractCollection (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>        Object (java.lang)<br/>    Set (java.util)<br/>        Collection (java.util)<br/>Serializable (java.io) | * A {@link java.util.Set} that uses an internal {@link CopyOnWriteArrayList} * for all of its operations.<br>  Thus, it shares the same basic properties*<br/>![](./images/juc/CopyOnWriteArraySet.png) | ReentrantLock                              |
+   | ConcurrentSkipListSet | AbstractSet (java.util)<br/>    AbstractCollection (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>        Object (java.lang)<br/>    Set (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>Cloneable (java.lang)<br/>NavigableSet (java.util)<br/>    SortedSet (java.util)<br/>        Set (java.util)<br/>            Collection (java.util)<br/>                Iterable (java.lang)<br/>Serializable (java.io) |                                                              |                                            |
+   | ConcurrentHashMap     | AbstractMap (java.util)<br/>    Map (java.util)<br/>    Object (java.lang)<br/>`ConcurrentMap (java.util.concurrent)`<br/>    Map (java.util)<br/>Serializable (java.io) | ![](./images/juc/cas.png)                                    | JDK1.8:<br>Node + CAS + Synchronized       |
+   | ConcurrentSkipListMap | AbstractMap (java.util)<br/>    Map (java.util)<br/>    Object (java.lang)<br/>Cloneable (java.lang)<br/>ConcurrentNavigableMap (java.util.concurrent)<br/>    ConcurrentMap (java.util.concurrent)<br/>        Map (java.util)<br/>    `NavigableMap (java.util)`<br/>        SortedMap (java.util)<br/>            Map (java.util)<br/>Serializable (java.io) |                                                              |                                            |
+   | ArrayBlockingQueue    | AbstractQueue (java.util)<br/>    AbstractCollection (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>        Object (java.lang)<br/>    Queue (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>BlockingQueue (java.util.concurrent)<br/>    Queue (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>Serializable (java.io) | ![](./images/juc/ArrayBlockingQueue.png)                     | Lock+Condition                             |
+   | LinkedBlockingQueue   | AbstractQueue (java.util)<br/>    AbstractCollection (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>        Object (java.lang)<br/>    Queue (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>BlockingQueue (java.util.concurrent)<br/>    Queue (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>Serializable (java.io) | ArrayBlockingQueue与LinkedBlockingQueue的比较?<br>相同点：<br>ArrayBlockingQueue和LinkedBlockingQueue都是通过condition通知机制来实现可阻塞式插入和删除元素，并满足线程安全的特性；<br>ArrayBlockingQueue底层是采用的数组进行实现，而LinkedBlockingQueue则是采用链表数据结构；<br>不同点:<br>ArrayBlockingQueue插入和删除数据，只采用了一个lock，而LinkedBlockingQueue则是在插入和删除分别采用了`putLock`和`takeLock`，<br>这样可以降低线程由于线程无法获取到lock而进入WAITING状态的可能性，从而提高了线程并发执行的效率。 |                                            |
+   | ConcurrentLinkedQueue | AbstractQueue (java.util)<br/>    AbstractCollection (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>        Object (java.lang)<br/>    Queue (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>Queue (java.util)<br/>    Collection (java.util)<br/>        Iterable (java.lang)<br/>Serializable (java.io) |                                                              | 无锁算法，底层基于**自旋+CAS**的方式实现。 |
+   | ConcurrentLinkedDeque | AbstractCollection (java.util)<br/>    Collection (java.util)<br/>        Iterable (java.lang)<br/>    Object (java.lang)<br/>Deque (java.util)<br/>    Queue (java.util)<br/>        Collection (java.util)<br/>            Iterable (java.lang)<br/>Serializable (java.io) |                                                              |                                            |
+
+   
+
+   > - CopyOnWrite*：只有两个
+   > - Concurrent*
+   > - Blocking*
+
+   (3)ConcurrentHashMap
+
+   ```java
+       final V putVal(K key, V value, boolean onlyIfAbsent) {
+           //不允许 key或value为null
+           if (key == null || value == null) throw new NullPointerException();
+           //计算hash值
+           int hash = spread(key.hashCode());
+           int binCount = 0;
+           //死循环 何时插入成功 何时跳出
+           for (Node<K,V>[] tab = table;;) {
+               Node<K,V> f; int n, i, fh;
+               //如果table为空的话，初始化table 
+               if (tab == null || (n = tab.length) == 0)
+                   tab = initTable();
+               //根据hash值计算出在table里面的位置
+               else if ((f = tabAt(tab, i = (n - 1) & hash)) == null) {
+                   //如果这个位置没有值 ，直接放进去，不需要加锁
+                   if (casTabAt(tab, i, null,
+                                new Node<K,V>(hash, key, value, null)))
+                       break;                   // no lock when adding to empty bin
+               }
+               //当遇到表连接点时，需要进行整合表的操作
+               else if ((fh = f.hash) == MOVED)
+                   tab = helpTransfer(tab, f);
+               else {
+                   V oldVal = null;
+                   //结点上锁  这里的结点可以理解为hash值相同组成的链表的头结点
+                   synchronized (f) {
+                       if (tabAt(tab, i) == f) {
+                           if (fh >= 0) {
+                               binCount = 1;
+                               //在这里遍历链表所有的结点
+                               for (Node<K,V> e = f;; ++binCount) {
+                                   K ek;
+                                   //如果hash值和key值相同  则修改对应结点的value值 
+                                   if (e.hash == hash &&
+                                       ((ek = e.key) == key ||
+                                        (ek != null && key.equals(ek)))) {
+                                       oldVal = e.val;
+                                       if (!onlyIfAbsent)
+                                           e.val = value;
+                                       break;
+                                   }
+                                   Node<K,V> pred = e;
+                                    //如果遍历到了最后一个结点，那么就证明新的节点需要插入 就把它插入在链表尾部
+                                   if ((e = e.next) == null) {
+                                       pred.next = new Node<K,V>(hash, key,
+                                                                 value, null);
+                                       break;
+                                   }
+                               }
+                           }
+                           //如果这个节点是树节点，就按照树的方式插入值
+                           else if (f instanceof TreeBin) {
+                               Node<K,V> p;
+                               binCount = 2;
+                               if ((p = ((TreeBin<K,V>)f).putTreeVal(hash, key,
+                                                              value)) != null) {
+                                   oldVal = p.val;
+                                   if (!onlyIfAbsent)
+                                       p.val = value;
+                               }
+                           }
+                       }
+                   }
+                   //如果链表长度已经达到临界值8 就需要把链表转换为树结构
+                   if (binCount != 0) {
+                       if (binCount >= TREEIFY_THRESHOLD)
+                           treeifyBin(tab, i);
+                       if (oldVal != null)
+                           return oldVal;
+                       break;
+                   }
+               }
+           }
+           //将当前ConcurrentHashMap的元素数量+1
+           addCount(1L, binCount);
+           return null;
+       }
+   ```
+
+   
+
+   (5) Demo()
 
 ### （四）JVM
 
@@ -1210,6 +1793,12 @@
    > - 然后，创建一个 ServerSocketChannel，并且向 Selector 注册，通过指定SelectionKey.OP_ACCEPT，告诉调度员，它关注的是新的连接请求。注意，为什么我们要明确配置非阻塞模式呢？这是因为阻塞模式下，注册操作是不允许的，会抛出 IllegalBlockingModeException 异常。
    > - Selector 阻塞在 select 操作，当有 Channel 发生接入请求，就会被唤醒。
    > - 通过 SocketChannel 和 Buffer 进行数据操作，在本例中是发送了一段字符串。
+
+   | Channel | Buffer | Selector |
+   | ------- | ------ | -------- |
+   |         |        |          |
+
+   
 
 7. Java NIO Channel通道和流非常相似，主要有以下几点区别?
 
