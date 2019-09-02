@@ -607,6 +607,16 @@ SACK方法
   - 正数：正数的反码是其本身
   - 负数：负数的反码是在其原码的基础上, 符号位不变，其余各个位取反.
 
+#### 2.fork函数
+
+> ==int main(){fork()||fork();}共创建几个进程：3==
+>
+> fork()给子进程返回一个零值，而给父进程返回一个非零值； 
+>
+>   在main这个主进程中，首先执行     **fork()**    || fork(),   左边的fork()返回一个非零值，根据||的短路原则，前面的表达式为真时，后面的表达式不执行，故包含main的这个主进程创建了一个子进程， 
+>
+>   由于子进程会复制父进程，而且子进程会根据其返回值继续执行，就是说，在子进程中，     **fork()**   ||fork()这条语句左边表达式的返回值是0,   所以||右边的表达式要执行，这时在子进程中又创建了一个进程， 即main进程->子进程->子进程，一共创建了3个进程。 
+
 ### （二）并发
 
 #### 1.进程、线程、管程、协程？
@@ -717,6 +727,13 @@ public class MultiThread {
 #### 3.信号和信号量之间的区别？
 
 - 信号量：（Semaphore）进程间通信处理同步互斥的机制。是在多线程环境下使用的一种设施, 它负责协调各个线程, 以保证它们能够正确、合理的使用公共资源。（特点，pv操作，用于同步进程）
+
+  > 若信号S的初值为2，当前值为－1，则表示有（B　）个等待进程。
+  >
+  > A.0  B.1  C.2  D.3
+  >
+  > 2代表有两个资源空闲,负数的绝对值表示在等待的进程数量
+
 - 信号：（signal）是一种处理异步事件的方式。信号是比较复杂的通信方式，用于通知接受进程有某种事件发生，除了用于进程外，还可以发送信号给进程本身。（特点，通知）
 
 #### 4.线程之间的通信？
@@ -875,6 +892,66 @@ public class MultiThread {
 
 #### 13.Linux内核select poll epoll？
 
+#### 14.**周转时间=作业完成时间减去作业到达时间**
+
+#### 15.**响应比=（作业等待时间+作业执行时间）/作业执行时间**
+
+> ==关于平均周转时间的一些题目==
+>
+> （１）设一个系统中有5个进程，它们的到达时间和服务时间如下，A的到达时间为0，服务时间为3；B的到达时间为2，服务时间为6；C的到达时间为4，服务时间为4；D的到达时间为6，服务时间为5；E的 到达时间为8，服务时间为2，忽略1/0以及其他开销时间，若分别按先来先服务（fFCFS）进行CPU调度，其平均周转时间为？
+>
+>  
+>
+> 答：==周转时间=作业完成时间减去作业到达时间==
+>
+> 所以
+>
+> A　完成时间　０＋３＝３　周转时间Ａ＝３－０；
+>
+> B　完成时间　３＋６＝９　周转时间Ｂ＝９－２＝７；
+>
+> C　完成时间　９＋４＝１３　周转时间Ｃ＝１３－４＝９；
+>
+> D　完成时间　１３＋５＝１８　周转时间Ｄ＝１８－６＝１２；
+>
+> E　完成时间　１８＋２＝２０　周转时间　Ｅ＝２０－８＝１２；
+>
+> 所以平均周转时间是　（３＋７＋９＋１２＋１２）／５＝８.６
+>
+>  
+>
+> （２）单道批处理系统有４个作业，J1 的提交时间为8 运行时间2， J2的提交时间8.6 运行时间0.6 ，J3的提交时间8.8 运行时间0.2 J4的提交时间9.0 运行时间0.5 在采用响应比优先调度算法时，其平均周转时间是？
+>
+>  
+>
+> ==响应比=（作业等待时间+作业执行时间）/ 作业执行时间==
+>
+> J1 周转时间(8+2) -8 =2；
+>
+> 此时
+>
+> J2等待时间为(8+2-8.6)=1.4 响应比为（1.4+0.6）/0.6=10/3
+>
+> J3 等待时机是(8+2-8.8)=1.2 响应比（1.2+0.2）/0.2=7
+>
+> J4 等待时间是(8+2-9.0)=1.0 响应比（1.0+0.5）/0.5=3
+>
+> 因为J3的响应比最高，所以J3开始运行。J3 的完成时间是10+0.2=10.2周转时间是10.2-8.8=1.4
+>
+> 此时
+>
+> J2的等待时间是10.2-8.6=1.6 响应比( 1.6+0.6)/0.6=11/3=3.6667
+>
+> J4的等待时间是10.2-9.0=1.2 响应比（1.2+0.5）/0.5=3.4
+>
+> 因为J2的响应比高，所以J2 开始运行，J2的完成时间是10.2+0.6=10.8；周转时间10.8-8.6=2.2；
+>
+> 这时候运行J4,J4 的完成时间是10.8+0.5=11.3 周转时间是11.3-9.0=2.3；
+>
+> 因此平均周转时间是（2+1.4+2.2+2.3 )/4=1.975
+>
+> 
+
 ### （三）内存管理
 
 #### 1.页面置换算法
@@ -882,10 +959,14 @@ public class MultiThread {
 - **FIFO算法**：先入先出，即淘汰最早调入的页面。
 - **OPT(MIN)算法**：选未来最远将使用的页淘汰，是一种最优的方案，可以证明缺页数最小。可惜，MIN需要知道将来发生的事，只能在理论中存在，实际不可应用。
 - **LRU(Least-Recently-Used)算法**：用过去的历史预测将来，选最近最长时间没有使用的页淘汰(也称最近最少使用)。性能最接近OPT。**与页面使用时间有关**。
-- **LFU(Least Frequently Used)算法**：即最不经常使用页置换算法，要求在页置换时置换引用计数最小的页，因为经常使用的页应该有一个较大的引用次数。**与页面使用次数有关**。
+- **LFU(Least Frequently Used)算法**：即最不经常使用页置换算法，要求在页置换时置换==引用计数==最小的页，因为经常使用的页应该有一个较大的引用次数。**与页面使用次数有关**。
 - **Clock**：给每个页帧关联一个使用位，当该页第一次装入内存或者被重新访问到时，将使用位置为1。每次需要替换时，查找使用位被置为0的第一个帧进行替换。在扫描过程中，如果碰到使用位为1的帧，将使用位置为0，在继续扫描。如果所谓帧的使用位都为0，则替换第一个帧。
 
-
+> 在一个请求页式存储管理中，一个程序的页面走向为 3、4、2、1、4、5、3、4、5、1、2，并采用 LRU算法。设分配给该程序的存储块数 S 分别为 3 和 4，在该访问中发生的缺页次数 F 是8,7
+>
+>  https://www.nowcoder.com/questionTerminal/780dce19969445c5a7814c0ff087c103
+>
+> <img src="./images/os/yemianzhihuan.png" width="500">
 
 ### （四）I/O
 
@@ -921,7 +1002,13 @@ public class MultiThread {
 
 （1）用户态和内核态？
 
+==传统的数据传送：读取文件从socket发送出去一共会经历四次拷贝：两次cpu拷贝，两次dma拷贝，四次上下文切换。==
+
 （2）零拷贝实现？
+
+- 减少io流程中不必要的拷贝，需要底层操作系统的支持，一次cpu拷贝，两次dma拷贝，两次上下文的切换。
+- 内存映射mmap（Java中NIO的==MappedByteBuffer==）
+- sendfile（Linux2.1，Java中使用的是==FileChanel.transferTo==，源通道发送到目标通道）
 
 http://trumandu.github.io/2019/06/14/%E6%B5%85%E6%9E%90%E9%9B%B6%E6%8B%B7%E8%B4%9D%E6%8A%80%E6%9C%AF/
 
@@ -959,7 +1046,10 @@ http://trumandu.github.io/2019/06/14/%E6%B5%85%E6%9E%90%E9%9B%B6%E6%8B%B7%E8%B4%
 
 #### 3.awk命令的使用？
 
+### 4.命令
 
+- lsof -i:80 查看端口
+- 
 
 ## 三、数据结构
 
@@ -1329,6 +1419,15 @@ public class LRUCache {
 
 ### 8.LeetCode547?
 
+
+
+### 9.卡特兰数
+
+- 字节跳动客户端2019笔试题目，圆圈，点，道路
+- 阿里巴巴括号匹配的种类
+
+<img src="./images/algorithm/Catalan.png">
+
 ## 五、Java
 
 ### （一）基础
@@ -1371,11 +1470,15 @@ public class LRUCache {
 
 不可以，可以重载，不可以重写，理由：==父类的私有属性以及构造器不能够被重载。==
 
-#### 4.StringBuffer怎么实现线程安全的？
+#### 4.String，StringBUlider，StringBuffer？
 
 对方法或者被调用的方法加了同步锁。
 
 <img src="./images/basic/StringBuffer.png" width="500"/>
+
+- String的基本特征，不可变类，声明为final类，当然使用类反射是可以更改的，一般用在常量申明
+- StringBuffer与StringBuilder
+  - 内存不够，将原来的复制过来
 
 #### 5.static相关？（目的：方便在没有new的情况下使用方法和属性）
 
@@ -1484,7 +1587,7 @@ public class StaticTest  {
 
 #### 8.Throwable类？
 
-（1）结构？
+##### （1）结构？
 
 > java.lang
 >
@@ -1501,21 +1604,37 @@ public class StaticTest  {
 >
 >     [Error](https://docs.oracle.com/javase/8/docs/api/java/lang/Error.html), [Exception](https://docs.oracle.com/javase/8/docs/api/java/lang/Exception.html)
 >
-> > 常用的方法：
+> > **常用的方法：==getMessage，printStackTrace==**
 > >
-> > - **public string getMessage()**:返回异常发生时的详细信息
+> > - **public string  getMessage()**:返回异常发生时的详细信息
 > > - **public string toString()**:返回异常发生时的简要描述
 > > - **public string getLocalizedMessage()**:返回异常对象的本地化信息。使用Throwable的子类覆盖这个方法，可以声称本地化信息。如果子类没有覆盖该方法，则该方法返回的信息与getMessage（）返回的结果相同
 > > - **public void printStackTrace()**:在控制台上打印Throwable对象封装的异常信息
 
-（2）常见的异常和错误？
+##### （2）常见的异常和错误？
 
-- 异常
+- 异常（可检查的，不可检查的（运行时运行））
   - ArithmeticException
   - IndexOutOfBoundsException
-  - RuntimeException
+  - ==RuntimeException==（在运行的时候抛出）
   - NullPointerException
-- 错误
+  - 原则：
+    - ==尽量捕获特定的异常==
+    - 不要生吞异常
+    - 只捕获必要的代码段
+    - 不要使用异常处理块控制代码的流程
+  - ==throw抛出异常==
+  - throws
+  - try  with语法糖，自动关闭资源，（类比Python中的
+  
+  | 编号 | 类型                                                         | 代表                                   |
+  | ---- | ------------------------------------------------------------ | -------------------------------------- |
+  | 1    | 检查型（在函数的声明上必须添加throws）（==不是RuntimeException的派生类==） | IOException，SQLException              |
+  | 2    | 非检查型（==是RuntimeException的派生类==）                   | NullPointException，ClassCastException |
+  
+  
+  
+- 错误（Linkage Error，virtual machine Error）
   - OutOfMemoryError
   - StackOverflowError
 
@@ -1549,6 +1668,39 @@ public class StaticTest  {
 | 26       | [TypeNotPresentException](https://docs.oracle.com/javase/8/docs/api/java/lang/TypeNotPresentException.html) |                                                              |
 | 27       | [UnsupportedOperationException](https://docs.oracle.com/javase/8/docs/api/java/lang/UnsupportedOperationException.html) |                                                              |
 
+##### （3）Throw和Throws的区别？
+
+> - Throw用于方法内部，Throws用于==方法声明==上
+> - Throw后跟异常对象，Throws后跟异常类型
+> - Throw后只能跟一个异常对象，Throws后可以一次声明多种异常类型
+
+##### （4）异常是怎么实现的？
+
+在编译器生成的字节码中，每一个方法都附有一个==异常表==（Exception Table），由：
+
+- from指针：指示了该异常处理器所监控的范围
+- to指针：指示了该异常处理器所监控的范围
+- target指针：==指向异常处理器的起始位置==
+- 捕获的异常类型
+
+四部分构成
+
+```java
+    public static void test(){
+        try {
+            int a=1/0;
+        }catch (Exception e){
+
+        }finally {
+
+        }
+    }
+```
+
+
+
+<img src="./images/basic/exception.png" width="500">
+
 #### 9. OutOfMemory详解
 
 | 名字                                                         | 图片                                                         | 解释                                                |
@@ -1561,6 +1713,24 @@ public class StaticTest  {
 |                                                              |                                                              |                                                     |
 |                                                              |                                                              |                                                     |
 |                                                              |                                                              |                                                     |
+
+==方法区溢出（方法区又被称作永久代）：==
+
+```java
+public class RuntimeConstantPoolOOM {
+
+    public static void main(String[] args) {
+        // 使用List保持着常量池引用，避免Full GC回收常量池行为
+        List<String> list = new ArrayList<String>();
+        // 10MB的PermSize在integer范围内足够产生OOM了
+        int i = 0;
+        while (true) {
+            //intern作用是把首次遇到的字符串实例复制到永久代去，返回的也是永久代中这个字符串实例的引用。
+            list.add(String.valueOf(i++).intern());
+        }
+    }
+}
+```
 
 
 
@@ -1621,9 +1791,35 @@ public class StaticTest  {
 
 #### 16.包装类和基础类的区别？
 
-
+拆箱装箱
 
 #### 17.Java中 try..catch关闭流的语法糖?
+
+#### 18.final，finally，finalize？
+
+final修饰类，方法，变量，为什么要final？不想被修改。
+
+finally：出现异常的时候，重要的代码会被执行（==比如关闭数据库连接池==）
+
+finalize：==定义在Object类中==，垃圾回收之前调用，在对象回收以前释放资源，==没一个对象的finalize方法只会被执行一次==，==在Java9中已经抛弃了==，缺陷：不能保证GC马上执行。finalize执行的流程：在GC的时候判断有没有覆盖finalize，实现了的话就会加入F-QUEUE队列，再次判断reachable是否复活还是回收。==进入队列等待低优先级的线程来处理==，所以并不一定会被回收。
+
+
+
+#### 19.面向对象的原则
+
+- 单一职责原则（Single Responsibility Principle）每一个类应该专注于做一件事情。
+
+- 里氏替换原则（Liskov Substitution Principle）超类存在的地方，子类是可以替换的。
+
+- 依赖倒置原则（Dependence Inversion Principle）==实现尽量依赖抽象==，不依赖具体实现。
+
+- 接口隔离原则（Interface Segregation Principle）应当为客户端提供尽可能小的单独的接口，而不是提供大的总的接口。
+
+- 迪米特法则（Law Of Demeter）又叫最少知识原则，==一个软件实体应当尽可能少的与其他实体发生相互作用==。
+
+- 开闭原则（Open Close Principle）面向扩展开放，面向修改关闭。
+
+- 组合/聚合复用原则（Composite/Aggregate Reuse Principle CARP）尽量使用合成/聚合达到复用，尽量少用继承。原则： 一个类中有另一个类的对象。 
 
 
 
@@ -4476,7 +4672,17 @@ public class UserReposityImpl implements UserReposity{
 
 
 
-## 七、Docker
+## 七、微服务
+
+
+
+
+
+
+
+
+
+
 
 ## 八、Redis高并发
 
@@ -4560,7 +4766,9 @@ Redis 通过 ==MULTI、EXEC、WATCH 等命令==来实现事务(transaction)功�
 
 ### 9.Redis的rehash？
 
+### 10.redis高可用？
 
+https://www.cnblogs.com/twinhead/p/9900659.html
 
 ## 九、Kafka，Redis
 
@@ -4578,6 +4786,66 @@ https://redislabs.com/ebook/part-2-core-concepts/chapter-3-commands-in-redis/3-5
 
 ### 2.kafka
 
+https://www.cnblogs.com/qingyunzong/p/9004509.html
+
+#### （0）概念
+
+==kafka中有不同的broker，保存数据的是topic，一个topic被分为多个partition。一个partition又被分为多个segment，一个segment又被分为index和log两部分构成。==
+
+partion：负载均衡使用
+
+topic中有partition，partition有副本，客服端读写都是找leader，不会找follower
+
+消费者组：同组的不能够消费同一个分区，可以消费不同的分区，不同的组的可以消费同一个分区。
+
+zookeeper：consumer和broker和zookeeper打交道，producer不会。
+
+> （1）broker.id每一个broker，唯一的int类型数据
+> （2）delete.topic.enable
+> （3）logs.dirs存储数据的位置
+> （4）zookeeper的集群
+> （4）配置zookeeper
+> （5）时间 7天，168小时
+> （6）大小 1G
+> kafka-server-start
+>
+> - 生产数据的流程
+>
+> kafka-topics --create --zookeeper hadoop：2181 ==--partition== 2 ==--replication-factor== --topic first
+>
+> 副本数目==不能够超过broker的数目==。
+>
+> kafka-console-consumer
+> kafka-console-producer
+
+> 启动的进程的时候要记录进程名和id，jps -l
+
+> 新版本：offset维护在本地，需要和leader通信，这样就会提高效率，--bootsrap-server。
+
+> 面试的时候介绍：
+>
+> （1）数据的流程，
+>
+> （2）生产过程分析：
+>
+> - 每一个消息都会append到分区（partition），属于顺序写磁盘（保证吞吐率）
+> - 写：分区内有序，每一个消息都赋予了一个offset
+> - ==分区原则（三种分区规则）==：指定partition，直接使用；指定了key，通过key的value进行hash；都没指定就采用==轮询==。
+> - 写入流程：1）producer首先从broker-list中获取partition的leader；2）producer将消息发送给leader；3）leader将消息写入到本地的log。4）follower从leader pull消息；5）写入本地的log后向leader发送ack。
+> - ==ACK应答==（0（不管leader）,1（不管follower）,2（多完成））follower（==如何producer不丢失数据---ACK设置为2==）
+>
+> （3）存储
+>
+> 1）broker
+>
+> 
+>
+> 2）zookeeper
+>
+> broker-------->[ids,topics,seqid],  topics--------->partitions----->state
+>
+> consumer------->offset
+
 #### （1）**request.required.acks来设置数据的可靠性：**
 
 | 值   | 含义                          | 可靠性                     |
@@ -4590,9 +4858,17 @@ https://redislabs.com/ebook/part-2-core-concepts/chapter-3-commands-in-redis/3-5
 
 #### （3）Kafka中的ISR、AR又代表什么？ISR的伸缩又指什么
 
+==Kafka的高可靠性的保障来源于其健壮的副本（replication）策略。==
+
+> ISR：排好序，最接近的顺序排序，用于leader挂了选举用的。
+>
+> 分区中的所有副本统称为AR（Assigned Repllicas）。所有与leader副本保持一定程度同步的副本（包括Leader）组成==ISR（In-Sync Replicas）==，ISR集合是AR集合中的一个子集。消息会先发送到leader副本，然后follower副本才能从leader副本中拉取消息进行同步，同步期间内follower副本相对于leader副本而言会有一定程度的滞后。前面所说的“一定程度”是指可以忍受的滞后范围，这个范围可以通过参数进行配置。与leader副本同步滞后过多的副本（不包括leader）副本，组成OSR(Out-Sync Relipcas),由此可见：==AR=ISR+OSR==。在正常情况下，所有的follower副本都应该与leader副本保持一定程度的同步，即==AR=ISR,OSR集合为空。==
+
 #### （4）Kafka中的HW、LEO、LSO、LW等分别代表什么？
 
 #### （5）Kafka中是怎么体现消息顺序性的？
+
+> kafka每个partition中的消息在写入时都是有序的，消费时，每个partition只能被每一个group中的**一个**消费者消费，保证了消费时也是有序的。整个topic不保证有序
 
 #### （6）Kafka中的分区器、序列化器、拦截器是否了解？它们之间的处理顺序是什么？
 
@@ -4606,9 +4882,15 @@ https://redislabs.com/ebook/part-2-core-concepts/chapter-3-commands-in-redis/3-5
 
 #### （11）消费者提交消费位移时提交的是当前消费到的最新消息的offset还是offset+1?
 
+offset+1
+
 #### （12）有哪些情形会造成重复消费？
 
+> 消费者消费后==没有commit offset==(程序崩溃/强行kill/消费耗时/自动提交偏移情况下unscrible)
+
 #### （13）那些情景下会造成消息漏消费？
+
+> 消费者没有处理完消息 ==提交offset==(自动提交偏移 未处理情况下程序异常结束)
 
 #### （14）KafkaConsumer是非线程安全的，那么怎么样实现多线程消费？
 
@@ -4616,19 +4898,31 @@ https://redislabs.com/ebook/part-2-core-concepts/chapter-3-commands-in-redis/3-5
 
 #### （16）当你使用kafka-topics.sh创建（删除）了一个topic之后，Kafka背后会执行什么逻辑？
 
+> 创建topic后的逻辑：
+>
+> 删除topic后的逻辑：
+
 #### （17）topic的分区数可不可以增加？如果可以怎么增加？如果不可以，那又是为什么？
 
+分区可以增加
+
 #### （18）topic的分区数可不可以减少？如果可以怎么减少？如果不可以，那又是为什么？
+
+> 分区不可以减少，会丢失数据.ps：topic是可以删除的。
 
 #### （19）创建topic时如何选择合适的分区数？
 
 #### （20）Kafka目前有那些内部topic，它们都有什么特征？各自的作用又是什么？
+
+> ==__consumer_offsets== 以双下划线开头，保存消费组的偏移
 
 #### （21）优先副本是什么？它有什么特殊的作用？
 
 #### （22）Kafka有哪几处地方有分区分配的概念？简述大致的过程及原理
 
 #### （23）简述Kafka的日志目录结构
+
+partition相当于一个大文件，平均分成了多个segment数据文件，每一个segment由两个文件构成==×××.index （索引）和×××.log（数据）==两部分组成。
 
 #### （24）Kafka中有那些索引文件？
 
@@ -4676,7 +4970,9 @@ https://redislabs.com/ebook/part-2-core-concepts/chapter-3-commands-in-redis/3-5
 
 #### （46）Kafka有哪些指标需要着重关注？
 
-#### （47）怎么计算Lag？(注意read_uncommitted和read_committed状态下的不同)
+#### （47）怎么计算Lag？
+
+#### (注意read_uncommitted和read_committed状态下的不同)
 
 #### （48）Kafka的那些设计让它有如此高的性能？
 
@@ -4688,15 +4984,17 @@ https://redislabs.com/ebook/part-2-core-concepts/chapter-3-commands-in-redis/3-5
 
 #### （52）怎么样才能确保Kafka极大程度上的可靠性？
 
-#### 十、MySQL
 
-#### 1.数据库引擎？（InnoDB和MySql区别）
+
+## 十、MySQL
+
+### 1.数据库引擎？（InnoDB和MyISAM区别）
 
 | 编号 | 区别     | InnoDB                                                       | MyISAM                                                       |
 | ---- | -------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
-| 1    | 锁       | InnoDB 支持行级锁(row-level locking)和表级锁                 | MyISAM 只有表级锁(table-level locking)                       |
+| 1    | 锁       | InnoDB 支持==行级锁==(row-level locking)和表级锁             | MyISAM 只有表级锁(table-level locking)                       |
 | 2    | 索引     | 其数据文件本身就是索引文件。相比MyISAM，==其表数据文件本身就是按B+Tree组织的一个索引结构==，树的叶节点data域保存了完整的数据记录。这个索引的key是数据表的主键，因此InnoDB表数据文件本身就是主索引。这被称为“聚簇索引（或聚集索引）”。 | B+Tree==叶节点的data域存放的是数据记录的地址==。在索引检索的时候，首先按照B+Tree搜索算法搜索索引，如果指定的Key存在，则取出其 data 域的值，然后以 data 域的值为地址读取相应的数据记录。这被称为“非聚簇索引”。 |
-| 3    | 事务     | InnoDB** 提供事务支持事务，外部键等高级数据库功能。 具有事务(commit)、回滚(rollback)和崩溃修复能力(crash recovery capabilities)的事务安全(transaction-safe (ACID compliant))型表。 | 强调的是性能，每次查询具有原子性,其执行数度比InnoDB类型更快，但是不提供事务支持。 |
+| 3    | 事务     | **InnoDB** 提供事务支持事务，外部键等高级数据库功能。 具有事务(commit)、回滚(rollback)和崩溃修复能力(crash recovery capabilities)的事务安全(transaction-safe (ACID compliant))型表。 | 强调的是性能，每次查询具有原子性,其执行数度比InnoDB类型更快，但是不提供事务支持。 |
 | 4    | 外键     | InnoDB支持                                                   | MyISAM不支持                                                 |
 | 5    | 崩溃恢复 | InnoDB支持                                                   | MyISAM不支持                                                 |
 | 6    | MVCC     | 应对高并发事务, MVCC比单纯的加锁更高效;MVCC只在 `READ COMMITTED` 和 `REPEATABLE READ` 两个隔离级别下工作;MVCC可以使用 乐观(optimistic)锁 和 悲观(pessimistic)锁来实现 | MyISAM不支持                                                 |
@@ -4707,7 +5005,11 @@ https://redislabs.com/ebook/part-2-core-concepts/chapter-3-commands-in-redis/3-5
 >
 > <img src="images/mysql/page.png" width="600">
 
+==特变注意，两种数据库引擎对应的文件是不同的==
 
+- InnoDB：由数据库的结构文件和（数据+索引）两部分构成：test_innodb_lock.==frm==,test_innodb_lock.==idb==，叶子节点存储看数据，索引文件和数据文件合并了。==聚集索引：数据和索引聚集在一起了==，主键索引和其他索引之间的区别：其他索引存储的是主键，主键存的是data。为什么推荐整型数据自增？主要是在分裂的时候减少平衡操作。
+
+- MyISAM：由数据库的结构文件，数据，索引三部分构成：test_myisam.==frm==,test_myisam==.MYD==,test_myisam==.MYI==，非聚集索引数据文件和索引文件是分开的。
 
 ### 2.sql语句
 
@@ -4920,6 +5222,10 @@ ON table 1.column_name=table 2.column_name
 
 ### 11.MySQL索引？
 
+#### （0）底层的数据结构
+
+==B+树==，主要是考虑二叉树的深度，主要考虑的是IO特别耗时间。一个节点会存储多个索引。
+
 > - 主键索引名为pk_字段名； 
 >
 > - _唯一索引名为 uk_字段名； 
@@ -4938,7 +5244,7 @@ ON table 1.column_name=table 2.column_name
 
 #### （2）Hash索引和B+树所有有什么区别或者说优劣呢?
 
-
+#### （3）InnoDB为什么需要主键？
 
 ### 12.阿里巴巴技术手册SQL？
 
@@ -4968,7 +5274,9 @@ ON table 1.column_name=table 2.column_name
 
 #### （2）在Spring boot中的实践？
 
-#### 15.触发器，视图？
+### 15.触发器，视图？
+
+### 16.什么是聚集索引？
 
 
 
@@ -5214,7 +5522,27 @@ public class BitMap {
 
 ### 8.百度的查询框中，假设你打了一个“中”，那么下面的一串的提示字符，类似“中国/中间”这些是如何出现的？
 
+### 9.正则表达式
 
+> ==［．．．］==    匹配括号内任意字符； 
+>
+> ==［^．．．］==    不匹配括号内任意字符； 
+>
+> ==.==         除换行和其他Unicode行终止符之外的任意字符 
+>
+>   ==\w==      等价于==[a-zA-Z0-9]== 
+>
+>  ==\W==     等价于==[\^a-zA-Z0-9]== 
+>
+>  ==\s==     任何unicode空白符 
+>
+>   =={n,m}==至少匹配n次不能超过m次 
+>
+>   ==？==     等价于=={0,1}==
+>
+>   ==\+==     等价于=={1，}==
+>
+>   ==\*==      等价于=={0，}== 
 
 ## 十四、综合
 
@@ -5379,7 +5707,7 @@ public class BitMap {
 
 ### 15.大学期间遇到的最受挫的事是什么
 
-- 本科：被发好人卡（在一定程度被否定）
+- 本科：
 - 研究生阶段的挑战：论文
 
 ### 16.平时有什么兴趣爱好呢
