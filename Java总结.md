@@ -49,10 +49,13 @@ Java研发工程师
 
 #### 4.TCP四次挥手的过程？
 
-```
-关闭连接的过程可以由服务端和客户端的任何一方发起，发起的一方状态变化为：Established------>FIN_WAIT_1------>FIN_WAIT_2------>TIME_WAIT------>CLOSED; 
-被动关闭的一方的状态变化为Establised------>CLOSE_WAIT------>LAST_ACK------>CLOSED.
-```
+- 关闭连接的过程可以由服务端和客户端的任何一方发起，发起的一方状态变化为：
+
+==Established------>FIN_WAIT_1------>FIN_WAIT_2------>TIME_WAIT------>CLOSED;==
+
+- 被动关闭的一方的状态变化为：
+
+==Establised------>CLOSE_WAIT------>LAST_ACK------>CLOSED.==
 
 ![](./images/network/huishou.png)
 
@@ -102,9 +105,7 @@ Java研发工程师
 
 #### 8.**说一说在三次握手的时候可能存在的安全问题？**
 
-```
-当第二次握手后，服务端将会进入SYN_RECV状态（又叫做半连接状态），通过伪造客户端的地址，这个时候服务器端一直在等待客户端返回ACK，但是由于地址是伪造的，所以根本就无法收到ACK。当这种伪造的连接数量大的时候就会导致DDOS。
-```
+> 当第二次握手后，服务端将会进入==SYN_RECV==状态（又叫做==半连接状态==），通过伪造客户端的地址，这个时候服务器端一直在等待客户端返回ACK，但是由于地址是伪造的，所以根本就无法收到ACK。当这种伪造的连接数量大的时候就会导致DDOS。
 
 #### 9.域名解析
 
@@ -152,19 +153,17 @@ DNS资源记录：
 
 #### 10.**TCP是如何保证可靠传输的？**(分编校丢流拥重超)
 
-   ```
-   （1）应用数据被TCP分割成为适合发送的数据块
-   （2）TCP将会给每一个包进行编号，接收方会对数据进行排序，将有序的数据传输给应用层。
-           序列号：TCP传输时将每个字节的数据都进行了编号，这就是序列号。
-           确认应答：TCP传输的过程中，每次接收方收到数据后，都会对传输方进行确认应答。也就是发送ACK报文。这个ACK报文当中带有对应的确认序列号，告诉发送方，接收到了哪些数据，下一次的数据从哪里发。
-           序列号的作用不仅仅是应答的作用，有了序列号能够将接收到的数据根据序列号排序，并且去掉重复序列号的数据。这也是TCP传输可靠性的保证之一。
-   （3）TCP将会保持首部和数据的校验和，目的是检查数据在传输的过程中是否被修改
-   （4）丢弃重复发送的数据
-   （5）流量控制：TCP连接的每一方都有一个固定的缓冲空间，TCP的接收端只允许发送端发送接收端缓冲区能够容纳的数据，当接收方来不及处理的时候，能够提示发送端降低发送的速率，防止丢包。（TCP使用的是滑动窗口进行流量控制）
-   （6）拥塞控制（当网络阻塞的时候，减少数据的发送，拥塞控制就是防止过多的数据注入到网络中，这样使网络中的路由器或者链路不至于过载。）
-   （7）自动重传（为了实现可靠的传输，每发送完一个分组就会停止发送，等待对方确认，确认后再发送下一个分组。）
-   （8）超时重传（当TCP发出一个分组后，它将启动一个定时器，等待目的端确认接收，如果不及时，将会重传。）
-   ```
+> - （1）应用数据被TCP==分割成为适合发送的数据块==
+> - （2）TCP将会给每一个包进行==编号==，接收方会对数据进行排序，将有序的数据传输给应用层。
+>              序列号：TCP传输时将每个字节的数据都进行了编号，这就是序列号。
+>              确认应答：TCP传输的过程中，每次接收方收到数据后，都会对传输方进行确认应答。也就是发送ACK报文。这个ACK报文当中带有对应的确认序列号，告诉发送方，接收到了哪些数据，下一次的数据从哪里发。
+>              序列号的作用不仅仅是应答的作用，有了序列号能够将接收到的数据根据序列号排序，并且去掉重复序列号的数据。这也是TCP传输可靠性的保证之一。
+> - （3）TCP将会保持首部和数据的==校验和==，目的是检查数据在传输的过程中是否被修改
+> - （4）==丢弃==重复发送的数据
+> - （5）流量控制：TCP连接的==每一方都有一个固定的缓冲空间==，TCP的接收端==只允许发送端发送接收端缓冲区能够容纳的数据==，当接收方来不及处理的时候，能够==提示发送端降低发送的速率，防止丢包==。（TCP使用的是==滑动窗口==进行流量控制)
+> - （6）拥塞控制（当网络阻塞的时候，减少数据的发送，拥塞控制就是防止过多的数据注入到网络中，这样使网络中的路由器或者链路不至于过载。）
+> - （7）自动重传（为了实现可靠的传输，每发送完一个分组就会停止发送，等待对方确认，确认后再发送下一个分组。）
+> - （8）超时重传（当TCP发出一个分组后，它将启动一个定时器，等待目的端确认接收，如果不及时，将会重传。）
 
    
 
@@ -197,10 +196,8 @@ DNS资源记录：
 
 #### 13.**在TCP和UDP之上都有哪些应用层的协议？**
 
-```
-TCP：HTTP，HTTPS，SMTP（简单邮件传输协议），POP3，SSH
-UDP：DNS，Telnet，SNMP（简单网络管理协议），IGMP（网络组管理协议）,RIP(路由信息协议)，DHCP（动态主机设置协议）
-```
+> ==TCP：==HTTP，HTTPS，SMTP（简单邮件传输协议），POP3，SSH
+> ==UDP：==DNS，Telnet，SNMP（简单网络管理协议），IGMP（网络组管理协议）,RIP(路由信息协议)，DHCP（动态主机设置协议）
 
 
 
@@ -209,7 +206,7 @@ UDP：DNS，Telnet，SNMP（简单网络管理协议），IGMP（网络组管理
 > （1）客户端给出一个==协议版本号、一个客户端生成的随机数（Client random）以及客户端支持的加密算法==。（客户端发送了三件东西）
 > （2）服务端确认双方使用的加密算法，并且给出数字证书，以及一个随机数（server random）。（服务端发送了两件东西）
 > （3）客户端确认数字证书有效，然后生成一个新的随机数（Premaster secret），并且使用数字证书中的公钥，加密这个随机数，将其发送给服务端。（客户端发送了一个非对称加密的随机数）
-> （4）服务端使用自己的私钥，获取来自客户端的加密随机数（Premaster secret）。（服务端使用非对称加密算法进行解密）
+> （4）服务端使用自己的==私钥==，获取来自客户端的加密随机数（Premaster secret）。（服务端使用非对称加密算法进行解密）
 > （5）客户端和服务端根据约定的加密方法，使用前面的三个随机数，生成对话密钥（session key），用来加密整个会话。（服务端使用对称密钥会话）
 >
 > > 对称加密和非对称加密？
@@ -384,53 +381,53 @@ UDP：DNS，Telnet，SNMP（简单网络管理协议），IGMP（网络组管理
 
 （2）细节
 
-| 状态码 | 状态码英文名称                  | 中文描述                                                     |
-| ------ | ------------------------------- | ------------------------------------------------------------ |
-| 100    | Continue                        | 继续。客户端应继续其请求                                     |
-| 101    | Switching Protocols             | 切换协议。服务器根据客户端的请求切换协议。只能切换到更高级的协议，例如，切换到HTTP的新版本协议 |
-|        |                                 |                                                              |
-| 200    | OK                              | 请求成功。一般用于GET与POST请求                              |
-| 201    | Created                         | 已创建。成功请求并创建了新的资源                             |
-| 202    | Accepted                        | 已接受。已经接受请求，但未处理完成                           |
-| 203    | Non-Authoritative Information   | 非授权信息。请求成功。但返回的meta信息不在原始的服务器，而是一个副本 |
-| 204    | No Content                      | 无内容。服务器成功处理，但未返回内容。在未更新网页的情况下，可确保浏览器继续显示当前文档 |
-| 205    | Reset Content                   | 重置内容。服务器处理成功，用户终端（例如：浏览器）应重置文档视图。可通过此返回码清除浏览器的表单域 |
-| 206    | Partial Content                 | 部分内容。服务器成功处理了部分GET请求                        |
-|        |                                 |                                                              |
-| 300    | Multiple Choices                | 多种选择。请求的资源可包括多个位置，相应可返回一个资源特征与地址的列表用于用户终端（例如：浏览器）选择 |
-| 301    | Moved Permanently               | 永久移动。请求的资源已被永久的移动到新URI，返回信息会包括新的URI，浏览器会自动定向到新URI。今后任何新的请求都应使用新的URI代替 |
-| 302    | Found                           | 临时移动。与301类似。但资源只是临时被移动。客户端应继续使用原有URI |
-| 303    | See Other                       | 查看其它地址。与301类似。使用GET和POST请求查看               |
-| 304    | Not Modified                    | 未修改。所请求的资源未修改，服务器返回此状态码时，不会返回任何资源。客户端通常会缓存访问过的资源，通过提供一个头信息指出客户端希望只返回在指定日期之后修改的资源 |
-| 305    | Use Proxy                       | 使用代理。所请求的资源必须通过代理访问                       |
-| 306    | Unused                          | 已经被废弃的HTTP状态码                                       |
-| 307    | Temporary Redirect              | 临时重定向。与302类似。使用GET请求重定向                     |
-|        |                                 |                                                              |
-| 400    | Bad Request                     | 客户端请求的语法错误，服务器无法理解                         |
-| 401    | Unauthorized                    | 请求要求用户的身份认证                                       |
-| 402    | Payment Required                | 保留，将来使用                                               |
-| 403    | Forbidden                       | 服务器理解请求客户端的请求，但是拒绝执行此请求               |
-| 404    | Not Found                       | 服务器无法根据客户端的请求找到资源（网页）。通过此代码，网站设计人员可设置"您所请求的资源无法找到"的个性页面 |
-| 405    | Method Not Allowed              | 客户端请求中的方法被禁止                                     |
-| 406    | Not Acceptable                  | 服务器无法根据客户端请求的内容特性完成请求                   |
-| 407    | Proxy Authentication Required   | 请求要求代理的身份认证，与401类似，但请求者应当使用代理进行授权 |
-| 408    | Request Time-out                | 服务器等待客户端发送的请求时间过长，超时                     |
-| 409    | Conflict                        | 服务器完成客户端的 PUT 请求时可能返回此代码，服务器处理请求时发生了冲突 |
-| 410    | Gone                            | 客户端请求的资源已经不存在。410不同于404，如果资源以前有现在被永久删除了可使用410代码，网站设计人员可通过301代码指定资源的新位置 |
-| 411    | Length Required                 | 服务器无法处理客户端发送的不带Content-Length的请求信息       |
-| 412    | Precondition Failed             | 客户端请求信息的先决条件错误                                 |
-| 413    | Request Entity Too Large        | 由于请求的实体过大，服务器无法处理，因此拒绝请求。为防止客户端的连续请求，服务器可能会关闭连接。如果只是服务器暂时无法处理，则会包含一个Retry-After的响应信息 |
-| 414    | Request-URI Too Large           | 请求的URI过长（URI通常为网址），服务器无法处理               |
-| 415    | Unsupported Media Type          | 服务器无法处理请求附带的媒体格式                             |
-| 416    | Requested range not satisfiable | 客户端请求的范围无效                                         |
-| 417    | Expectation Failed              | 服务器无法满足Expect的请求头信息                             |
-|        |                                 |                                                              |
-| 500    | Internal Server Error           | 服务器内部错误，无法完成请求                                 |
-| 501    | Not Implemented                 | 服务器不支持请求的功能，无法完成请求                         |
-| 502    | Bad Gateway                     | 作为网关或者代理工作的服务器尝试执行请求时，从远程服务器接收到了一个无效的响应 |
-| 503    | Service Unavailable             | 由于超载或系统维护，服务器暂时的无法处理客户端的请求。延时的长度可包含在服务器的Retry-After头信息中 |
-| 504    | Gateway Time-out                | 充当网关或代理的服务器，未及时从远端服务器获取请求           |
-| 505    | HTTP Version not supported      | 服务器不支持请求的HTTP协议的版本，无法完成处理               |
+| 状态码  | 状态码英文名称                  | 中文描述                                                     |
+| ------- | ------------------------------- | ------------------------------------------------------------ |
+| 100     | Continue                        | 继续。客户端应继续其请求                                     |
+| 101     | Switching Protocols             | 切换协议。服务器根据客户端的请求切换协议。只能切换到更高级的协议，例如，切换到HTTP的新版本协议 |
+|         |                                 |                                                              |
+| 200     | OK                              | 请求成功。一般用于GET与POST请求                              |
+| 201     | Created                         | 已创建。成功请求并创建了新的资源                             |
+| 202     | Accepted                        | 已接受。已经接受请求，但未处理完成                           |
+| 203     | Non-Authoritative Information   | 非授权信息。请求成功。但返回的meta信息不在原始的服务器，而是一个副本 |
+| 204     | No Content                      | 无内容。服务器成功处理，但未返回内容。在未更新网页的情况下，可确保浏览器继续显示当前文档 |
+| 205     | Reset Content                   | 重置内容。服务器处理成功，用户终端（例如：浏览器）应重置文档视图。可通过此返回码清除浏览器的表单域 |
+| 206     | Partial Content                 | 部分内容。服务器成功处理了部分GET请求                        |
+|         |                                 |                                                              |
+| 300     | Multiple Choices                | 多种选择。请求的资源可包括多个位置，相应可返回一个资源特征与地址的列表用于用户终端（例如：浏览器）选择 |
+| ==301== | Moved Permanently               | 永久移动。请求的资源已被永久的移动到新URI，返回信息会包括新的URI，浏览器会自动定向到新URI。今后任何新的请求都应使用新的URI代替 |
+| 302     | Found                           | 临时移动。与301类似。但资源只是临时被移动。客户端应继续使用原有URI |
+| 303     | See Other                       | 查看其它地址。与301类似。使用GET和POST请求查看               |
+| 304     | Not Modified                    | 未修改。所请求的资源未修改，服务器返回此状态码时，不会返回任何资源。客户端通常会缓存访问过的资源，通过提供一个头信息指出客户端希望只返回在指定日期之后修改的资源 |
+| 305     | Use Proxy                       | 使用代理。所请求的资源必须通过代理访问                       |
+| 306     | Unused                          | 已经被废弃的HTTP状态码                                       |
+| 307     | Temporary Redirect              | 临时重定向。与302类似。使用GET请求重定向                     |
+|         |                                 |                                                              |
+| 400     | Bad Request                     | 客户端请求的语法错误，服务器无法理解                         |
+| ==401== | Unauthorized                    | 请求要求用户的身份认证                                       |
+| 402     | Payment Required                | 保留，将来使用                                               |
+| 403     | Forbidden                       | 服务器理解请求客户端的请求，但是拒绝执行此请求               |
+| 404     | Not Found                       | 服务器无法根据客户端的请求找到资源（网页）。通过此代码，网站设计人员可设置"您所请求的资源无法找到"的个性页面 |
+| 405     | Method Not Allowed              | 客户端请求中的方法被禁止                                     |
+| 406     | Not Acceptable                  | 服务器无法根据客户端请求的内容特性完成请求                   |
+| 407     | Proxy Authentication Required   | 请求要求代理的身份认证，与401类似，但请求者应当使用代理进行授权 |
+| 408     | Request Time-out                | 服务器等待客户端发送的请求时间过长，超时                     |
+| 409     | Conflict                        | 服务器完成客户端的 PUT 请求时可能返回此代码，服务器处理请求时发生了冲突 |
+| 410     | Gone                            | 客户端请求的资源已经不存在。410不同于404，如果资源以前有现在被永久删除了可使用410代码，网站设计人员可通过301代码指定资源的新位置 |
+| 411     | Length Required                 | 服务器无法处理客户端发送的不带Content-Length的请求信息       |
+| 412     | Precondition Failed             | 客户端请求信息的先决条件错误                                 |
+| 413     | Request Entity Too Large        | 由于请求的实体过大，服务器无法处理，因此拒绝请求。为防止客户端的连续请求，服务器可能会关闭连接。如果只是服务器暂时无法处理，则会包含一个Retry-After的响应信息 |
+| 414     | Request-URI Too Large           | 请求的URI过长（URI通常为网址），服务器无法处理               |
+| 415     | Unsupported Media Type          | 服务器无法处理请求附带的媒体格式                             |
+| 416     | Requested range not satisfiable | 客户端请求的范围无效                                         |
+| 417     | Expectation Failed              | 服务器无法满足Expect的请求头信息                             |
+|         |                                 |                                                              |
+| 500     | Internal Server Error           | 服务器内部错误，无法完成请求                                 |
+| 501     | Not Implemented                 | 服务器不支持请求的功能，无法完成请求                         |
+| 502     | Bad Gateway                     | 作为网关或者代理工作的服务器尝试执行请求时，从远程服务器接收到了一个无效的响应 |
+| 503     | Service Unavailable             | 由于超载或系统维护，服务器暂时的无法处理客户端的请求。延时的长度可包含在服务器的Retry-After头信息中 |
+| 504     | Gateway Time-out                | 充当网关或代理的服务器，未及时从远端服务器获取请求           |
+| 505     | HTTP Version not supported      | 服务器不支持请求的HTTP协议的版本，无法完成处理               |
 
 **1XX——表示通知信息，如请求收到了或正在进行处理**
 
@@ -474,14 +471,14 @@ UDP：DNS，Telnet，SNMP（简单网络管理协议），IGMP（网络组管理
 
 （4）快恢复？
 
-TCP通过**慢启动、拥塞避免、快重传以及快恢复**这四个算法来进行拥塞控制：
+TCP通过**慢启动、拥塞避免、快重传以及快恢复**这四个算法来进行==拥塞控制（使用滑动窗口进行流量控制）==：
 
 > - **慢启动：**一开始先设置一个比较小的拥塞窗口值cwnd（报文段的倍数），然后进行数据传输，每收到一个报文段的确认，我们就将**cwnd+1**，这样下来，cwnd总体上是乘以**2^n**的倍数增长。（慢启动非增长速度慢，只是增长的初始基数比较小）
 > - **拥塞避免：** 因为慢启动算法的增长比较快，当cwnd = ssthresh（预先设置好的门限值）时，我们启动拥塞避免算法，窗口值开始线性增长。
 >
 > > 随着拥塞避免算法的进行，网络出现超时的情况（这时判断为**拥塞出现**）。这时将cwnd降为一开始的值，重新进行**慢开始-拥塞避免**，并且此时的门限值设为出现拥塞时的cwnd的一半。
 >
-> - **快重传：** 快重传的目的是为了让发送方尽早知道某个报文段的丢失。如何知道呢？**当我们重复收到某一个报文段的3次确认时，我们就可以判断，它的下一个报文段可能出现了丢失**。这时我们启动快重传算法，立即重传丢失的报文段。
+> - **快重传：** 快重传的目的是为了让发送方尽早知道某个报文段的丢失。如何知道呢？**==当我们重复收到某一个报文段的3次确认时，我们就可以判断，它的下一个报文段可能出现了丢失==**。这时我们启动快重传算法，立即重传丢失的报文段。
 > - **快恢复：** 上面快重传算法的启动只是因为个别报文段的丢失，我们这时并不判断为网络拥塞，而是启动快恢复算法。我们将cwnd=ssthresh=当前cwnd的一半，并且开始拥塞避免算法。
 >
 > > 当然，也有的快恢复算法是将当前拥塞窗口再增大3个报文段的值，因为既然收到了3个重复的ACK，则说明有三个分组已经离开了网络，不在占用网络资源而是停留在对方缓存当中，可以适当将窗口值增大。
@@ -507,7 +504,7 @@ SACK方法
 （2）距离向量，链路状态
 
 - 距离向量：网络中没有任何一个节点知道整张表的信息，自己只知道它自己的路由表的内容。好处：所有的节点在没有任何集中授权的额情况下取得网络的一致视图。（RIP协议）
-- 链路状态：每一个节点都有足够的信息构建完整的网络映象。（OSPF协议，开放最短路径优先），路由的计算采用迪杰特斯拉算法进行计算。
+- 链路状态：每一个节点都有足够的信息构建完整的网络映象。==（OSPF协议，开放最短路径优先），路由的计算采用迪杰特斯拉算法进行计算==。
 
 #### 26.IP数据报格式？
 
@@ -532,7 +529,7 @@ SACK方法
 
 - 解决了什么问题：发送方和接收方速率不匹配时，保证可靠传输和包乱序的问题
 
-- 机制：接收方根据目前缓冲区大小，通知发送方目前能接收的最大值。发送方根据接收方的处理能力来发送数据。通过这种协调机制，防止接收端处理不过来。
+- 机制：==接收方根据目前缓冲区大小，通知发送方目前能接收的最大值==。发送方根据接收方的处理能力来发送数据。通过这种协调机制，防止接收端处理不过来。
 
 - 窗口大小：接收方发给发送端的这个值称为窗口大小
 
@@ -611,7 +608,7 @@ SACK方法
 
 > ==int main(){fork()||fork();}共创建几个进程：3==
 >
-> fork()给子进程返回一个零值，而给父进程返回一个非零值； 
+> fork()给==子进程返回一个零值，而给父进程返回一个非零值==； 
 >
 >   在main这个主进程中，首先执行     **fork()**    || fork(),   左边的fork()返回一个非零值，根据||的短路原则，前面的表达式为真时，后面的表达式不执行，故包含main的这个主进程创建了一个子进程， 
 >
@@ -623,7 +620,7 @@ SACK方法
 
 （1）线程和进程
 
-线程是程序执行的一条路径，在多线程的OS中，线程是调度和分配的基本单位，而进程是拥有资源的基本单位。结合Java的内存区域==（线程共享和线程私有）。==
+线程是程序执行的一条路径，在多线程的OS中，==线程是调度和分配的基本单位==，而进程是==拥有资源的基本单位==。结合Java的内存区域==（线程共享和线程私有）。==
 
 ```java
 package JavaDemo.MultiThreadTest;
@@ -882,9 +879,56 @@ public class MultiThread {
 
 个进程中访问临界资源的==那段程序称为临界区==（临界资源是==一次仅允许一个进程使用的共享资源==）。每次只准许一个进程进入临界区，进入后不允许其他进程进入。 
 
-#### 11.yield方法
+#### 11.yield方法，join方法
+
+- yield方法
 
 >  而当一个线程调用了 Thread 类的静态方法 yield 时，==是在告诉线程调度器自己占有的时间片中还没有使用完的部分自己不想使用了==，这暗示线程调度器现在就可以进行下一轮的线程调度 。
+
+- join方法
+
+> t.join()方法**阻塞调用此方法的线程**(calling thread)进入 **TIMED_WAITING** 状态，**直到线程t完成，此线程再继续**；
+>
+> 通常用于在main()主线程内，等待其它线程完成再结束main()主线程。
+>
+> ```java
+> public class JoinTester01 implements Runnable {
+>  
+>     private String name;
+>  
+>     public JoinTester01(String name) {
+>     this.name = name;
+>     }
+>  
+>     public void run() {
+>     System.out.printf("%s begins: %s\n", name, new Date());
+>     try {
+>         TimeUnit.SECONDS.sleep(4);
+>     } catch (InterruptedException e) {
+>         e.printStackTrace();
+>     }
+>     System.out.printf("%s has finished: %s\n", name, new Date());
+>     }
+>  
+>     public static void main(String[] args) {
+>     Thread thread1 = new Thread(new JoinTester01("One"));
+>     Thread thread2 = new Thread(new JoinTester01("Two"));
+>     thread1.start();
+>     thread2.start();
+>     
+>     try {
+>         thread1.join();
+>         thread2.join();
+>     } catch (InterruptedException e) {
+>         // TODO Auto-generated catch block
+>         e.printStackTrace();
+>     }
+>     System.out.println("Main thread is finished");
+>     }
+> }
+> ```
+>
+> 
 
 #### 12.一般在什么时候使用volatile？
 
@@ -1057,7 +1101,7 @@ http://trumandu.github.io/2019/06/14/%E6%B5%85%E6%9E%90%E9%9B%B6%E6%8B%B7%E8%B4%
 
 https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
 
-> B树
+> B树 https://blog.csdn.net/li_canhui/article/details/85305147
 >
 > > | 编号 | 特点                                                         |
 > > | ---- | ------------------------------------------------------------ |
@@ -1091,17 +1135,34 @@ https://www.cs.usfca.edu/~galles/visualization/Algorithms.html
 
 ### 3.循环队列？
 
+### 4.Trie Tree（208. Implement Trie (Prefix Tree)）
 
+Trie，又经常叫前缀树，字典树等等。它有很多变种，如后缀树，Radix Tree/Trie，PATRICIA tree，以及bitwise版本的crit-bit tree。当然很多名字的意义其实有交叉。
+
+- 应用
+  - **字符串检索**
+  - **文本预测、拼写检查**
+  - **词频统计**
+  - **排序**
+  - **字符串最长公共前缀**
+  - **字符串搜索的前缀匹配**
+  - **作为其他数据结构和算法的辅助结构**
 
 ## 四、算法
 
 ### 1.算法的分类？
 
-### 2.弗洛伊德算法？
+### 2.==弗洛伊德算法？==
 
-### 3.迪杰斯特拉算法？
+（==三层for循环，通过第三个点不断更新两个点之间的距离==）https://www.cnblogs.com/lc-java/p/7840464.html
 
-### 4.二分法？
+### 3.==迪杰斯特拉算法？==
+
+https://www.cnblogs.com/he-px/p/6677063.html
+
+https://www.cnblogs.com/zengzhihua/p/6755439.html
+
+### 4.二分法？（边界问题）
 
 ```java
     public int binarySearch(int[] nums,int target){
@@ -1470,7 +1531,7 @@ public class LRUCache {
 
 不可以，可以重载，不可以重写，理由：==父类的私有属性以及构造器不能够被重载。==
 
-#### 4.String，StringBUlider，StringBuffer？
+#### 4.String，StringBulider，StringBuffer？
 
 对方法或者被调用的方法加了同步锁。
 
@@ -1827,6 +1888,12 @@ finalize：==定义在Object类中==，垃圾回收之前调用，在对象回�
 
 ### （二）容器
 
+#### 0.整体架构
+
+==图中的绿色的虚线代表实现，绿色实线代表接口之间的继承，蓝色实线代表类之间的继承。==
+
+<img src="./images/basic/collection.png">
+
 #### 1.HashMap？
 
 > 并发场景下如果要保证一种可行的方式是使用 ==Collections.synchronizedMap()==方法来包装我们的 HashMap。但这是通过使用一个全局的锁来同步不同线程间的并发访问，因此会带来不可忽视的性能问题。
@@ -1978,6 +2045,13 @@ HashMap的扩容要和ArrayList的扩容进行区分，HashMap的扩容的真正
 
 <img src="./images/basic/linkedlist1.png" width="600"/>
 
+
+
+#### 8.TreeSet，TreeMap
+
+- TreeMap底层是一棵红黑树
+- 个人认为==TreeSet之于TreeMap==和==HashSet之于HashMap==是一样的。
+
 ### （三）并发
 
 #### 1.Java内存模型？《深入理解Java虚拟机》
@@ -2028,6 +2102,8 @@ public class Singleton2 {
 
 
 #### 3.线程的实现方式？怎么使用lambda的形式？
+
+ps:Python通过==两个标准库thread和threading==提供对线程的支持。thread提供了低级别的、原始的线程以及一个简单的锁。
 
 （1）Thread------------run()方法
 
@@ -2121,7 +2197,60 @@ public class ThreadTest {
 >
 > <img src="./images/multithread/2start.png" width="600">
 
+
+
 #### 4.线程池
+
+- 线程池的架构图
+
+  <img src="./images/juc/architecture.png">
+
+  | 编号 | 名称                                | 说明                 |
+  | ---- | ----------------------------------- | -------------------- |
+  | 1    | Executor                            | 只有execute方法      |
+  | 2    | ExecutorService（继承）             |                      |
+  | 3    | ==AbstractExecutorService==（实现） |                      |
+  | 4    | ThreadPoolExecutor（继承）          | ==构造器有七个参数== |
+
+  ==注意：接口和接口之间不可以使用implements，但是是可以使用继承的！，其实很好理解：implements是需要将所有的方法都实现的，但是interface是不能够包含具体的实现的！切记！==
+
+ThreadPoolExecutor继承了==AbstractExecutorService==，AbstractExecutorService实现了==ExecutorService==接口，ExecutorService继承了==Executor==接口。
+
+- Executors是一个工具类，主要的方法有：
+  - Executors.newFixedThreadPool
+
+```java
+    public static ExecutorService newFixedThreadPool(int nThreads) {
+        return new ThreadPoolExecutor(nThreads, nThreads,
+                                      0L, TimeUnit.MILLISECONDS,
+                                      new LinkedBlockingQueue<Runnable>());
+    }
+```
+
+- Executors.newCachedThreadPool
+
+```java
+    public static ExecutorService newCachedThreadPool() {
+        return new ThreadPoolExecutor(0, Integer.MAX_VALUE,
+                                      60L, TimeUnit.SECONDS,
+                                      new SynchronousQueue<Runnable>());
+    }
+```
+
+- Executors.newSingleThreadExecutor（==一个看来称不上是pool==）
+
+```java
+    public static ExecutorService newSingleThreadExecutor() {
+        return new FinalizableDelegatedExecutorService
+            (new ThreadPoolExecutor(1, 1,
+                                    0L, TimeUnit.MILLISECONDS,
+                                    new LinkedBlockingQueue<Runnable>()));
+    }
+```
+
+
+
+
 
 - ThreadPoolExecutor参数(7个参数)
 
@@ -2139,7 +2268,7 @@ public class ThreadTest {
   >
   > - @param handler                                           拒绝策略 (当任务太多导致工作队列满时的处理策略)
 
-- ==线程池的状态（高三位表示状态，第29位表示线程的数量）==
+- ==线程池的状态（高三位表示状态，第29位表示线程的数量）,ThreadPoolExecutor的ctl属性，三位，取值范围共计5个==，特别注意，这一个变量是原子类型的，==在谈论原子类型的使用的时候，可以拿来举例！==，还要注意的是，只有在线程池的状态等于-1的时候不会产生中断，当状态大于等于0的时候将会产生中断。
 
   > ==RUNNING==                                                              -1 接受新任务, 且处理已经进入阻塞队列的任务
   >
@@ -2173,6 +2302,17 @@ public class ThreadTest {
   > > - ==guava==提供的ThreadFactoryBuilder来创建线程池:
   > >
   > > > 通过上述⽅式创建线程时，不仅可以避免OOM的问题，还可以⾃定义线程名称，更加⽅便的出错的时候溯源。
+  
+  - 拒绝策略
+  
+  | 编号 | 拒绝策略            | 解释                                 |
+  | ---- | ------------------- | ------------------------------------ |
+  | 1    | CallerRunsPolicy    | 使用调用者所在的线程来执行任务       |
+  | 2    | AbortPolicy         | ==抛出异常==                         |
+  | 3    | DiscardPolicy       | 默认丢弃，==不抛出异常==             |
+  | 4    | DiscardOldestPolicy | 调用poll抛弃一个任务，执行当前的任务 |
+  
+  
 
 #### 5.Java 并发包提供了哪些并发工具类？
 
@@ -4119,9 +4259,9 @@ NIO:http://wiki.jikexueyuan.com/project/java-nio-zh/java-nio-non-blocking-server
 
 ### 5.Spring MVC的流程？
 
-（1）客户端（浏览器）发送请求，直接请求到 ==DispatcherServlet==。
+（1）客户端（浏览器）发送请求，直接请求到 ==DispatcherServlet==。在web.xml中进行了配置。
 
-（2）DispatcherServlet` 根据请求信息调用 `==HandlerMapping==`，解析请求对应的 `==Handler==
+（2）DispatcherServlet` 根据请求信息调用 `==HandlerMapping==`，解析请求对应的 `==Handler==（handler就是具体执行的业务方法，有返回结果）
 
 （3）解析到对应的 `Handler`（也就是我们平常说的 `Controller` 控制器）后，开始由 ==HandlerAdapter== 适配器处理。
 
@@ -4134,6 +4274,43 @@ NIO:http://wiki.jikexueyuan.com/project/java-nio-zh/java-nio-non-blocking-server
 （7）`DispaterServlet` 把返回的 `Model` 传给 `View`（==视图渲染==）。
 
 （8）把 `View` 返回给请求者（浏览器）
+
+<img src="./images/spring/mvc.jpg">
+
+> 使用==Arthas工具==来追踪执行的过程：
+>
+> > - ==sc:==查看JVM已加载的类信息
+> >
+> > | 参数名称         | 参数说明                                                     |
+> > | ---------------- | ------------------------------------------------------------ |
+> > | *class-pattern*  | 类名表达式匹配                                               |
+> > | *method-pattern* | 方法名表达式匹配                                             |
+> > | [d]              | 输出当前类的详细信息，包括这个类所加载的原始文件来源、类的声明、加载的ClassLoader等详细信息。 如果一个类被多个ClassLoader所加载，则会出现多次 |
+> > | [E]              | 开启正则表达式匹配，默认为通配符匹配                         |
+> > | [f]              | 输出当前类的成员变量信息（需要配合参数-d一起使用）           |
+> > | [x:]             | 指定输出静态变量时属性的遍历深度，默认为 0，即直接使用 `toString` 输出 |
+> >
+> > - `sm` 命令只能看到由当前类所声明 (declaring) 的方法，父类则无法看到。
+> >
+> > | 参数名称         | 参数说明                             |
+> > | ---------------- | ------------------------------------ |
+> > | *class-pattern*  | 类名表达式匹配                       |
+> > | *method-pattern* | 方法名表达式匹配                     |
+> > | [d]              | 展示每个方法的详细信息               |
+> > | [E]              | 开启正则表达式匹配，默认为通配符匹配 |
+> >
+> > - ==tt:==方法执行数据的时空隧道，记录下指定方法每次调用的==入参和返回信息==，并能对这些不同的时间下调用进行观测
+> >
+> > - ==watch:==方法执行数据观测,让你能方便的观察到指定方法的调用情况。==能观察到的范围为：`返回值`、`抛出异常`、`入参`，==通过编写 OGNL 表达式进行对应变量的查看。
+> > - ==trace：==方法内部调用路径，并输出方法路径上的每个节点上耗时
+>
+> > tt -t org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter *
+> >
+> > tt -t org.springframework.web.servlet.DispatcherServlet *
+> >
+> > 获取handler： watch org.springframework.web.servlet.DispatcherServlet getHandle，==可以得到具体的是哪一个函数将要被执行==
+> >
+> > <img src="./images/spring/arthas1.png">
 
 ### 6.接收参数的几种方法？
 
@@ -4666,23 +4843,168 @@ public class UserReposityImpl implements UserReposity{
 
 
 
+### 29. 注解
+
+| 编号 | 名字，介绍  | 补充                                                         |
+| ---- | ----------- | ------------------------------------------------------------ |
+| 1    | @Service    | <img src="./images/spring/service.png" width="500">          |
+| 2    | @Repository | <img src="./images/spring/Repository.png" width="500">       |
+| 3    | @Controller | <img src="./images/spring/Controller.png" width="500">       |
+| 4    | @Component  | @Component和以上三者之间的关系！                             |
+| 5    | @Autowired  | 以对类成员变量、方法及构造函数进行标注，完成自动装配的工作。另外，通过 `@Autowired` 可以消除get，set方法。 `@Autowired`是根据类型进行自动转配的。 |
+| 6    | @Resource   | `@Resource`也可以实现自动装配，但是 `@Resource`默认是按照名称进行自动装配。 |
+| 7    | @Bean       | `注解在方法上`，==声明当前方法的返回值为一个bean==，替代xml中的方式（==方法上==） |
+|      |             |                                                              |
 
 
 
+————————————————
+版权声明：本文为CSDN博主「坐看云起时_雨宣」的原创文章，遵循 CC 4.0 BY-SA 版权协议，转载请附上原文出处链接及本声明。
+原文链接：https://blog.csdn.net/qq_24434671/article/details/89448031
+
+#### （1）==声明bean==的注解
+
+@Component 组件，没有明确的角色
+
+@Service 在业务逻辑层使用（service层）
+
+@Repository 在数据访问层使用（dao层）
+
+@Controller 在展现层使用，控制器的声明（C）
+
+#### （2）==注入==bean的注解
+
+@Autowired：由Spring提供，例如各种的==template==可以被@Autowired注解。@Autowired默认==按类型装配==（这个注解是属业spring的），默认情况下必须要求依赖对象必须存在，如果要允许null值，可以设置它的required属性为false，如：@Autowired(required=false)，如果我们想使用名称装配可以结合==@Qualifier==（限定符，修饰符）注解进行使用
+
+```java
+@Autowired()
+@Qualifier("baseDao")
+private BaseDao baseDao;
+```
+
+@Inject：由JSR-330提供
+
+@Resource：由JSR-250提供，默认按照名称进行装配，名称可以通过==name属性==进行指定，如果没有指定name属性，当注解写在字段上时，默认取字段名进行安装名称查找，如果注解写在setter方法上默认取属性名进行装配。当找不到与名称匹配的bean时才按照类型进行装配。但是需要注意的是，如果name属性一旦指定，就只会按照名称进行装配。
+
+```java
+@Resource(name="baseDao")
+privateBaseDao baseDao;
+```
 
 
 
-## 七、微服务
+都可以注解在set方法和属性上，推荐注解在属性上
+
+#### （3）java==配置类==相关注解
+
+@Configuration 声明`当前类为配置类`，相当于xml形式的Spring配置（==类上==）
+
+@Bean `注解在方法上`，==声明当前方法的返回值为一个bean==，替代xml中的方式（==方法上==）
+
+@Configuration 声明当前类为配置类，其中内部组合了@Component注解，表明这个类是一个bean（类上）
+
+@ComponentScan 用于对Component进行扫描，相当于xml中的（类上）
+
+@WishlyConfiguration 为@Configuration与@ComponentScan的组合注解，可以替代这两个注解
+
+#### （4）切面（AOP）相关注解
+
+Spring支持AspectJ的注解式切面编程。
+
+@Aspect 声明一个切面（类上）使用@After、@Before、@Around定义建言（advice），可直接将拦截规则（切点）作为参数。
+
+@After 在方法执行之后执行（方法上）
+
+@Before 在方法执行之前执行（方法上）
+
+@Around 在方法执行之前与之后执行（方法上）
+
+@PointCut 声明切点
+
+在java配置类中使用@EnableAspectJAutoProxy注解开启Spring对AspectJ代理的支持（类上）
+
+#### （5）@Bean的属性支持
+
+@Scope 设置Spring容器如何新建Bean实例（方法上，得有@Bean）
+
+其设置类型包括：
+
+Singleton （单例,一个Spring容器中只有一个bean实例，默认模式）,
+
+Protetype （每次调用新建一个bean）,
+
+Request （web项目中，给每个http request新建一个bean）,
+
+Session （web项目中，给每个http session新建一个bean）,
+
+GlobalSession（给每一个 global http session新建一个Bean实例）
+
+@StepScope 在Spring Batch中还有涉及
+
+@PostConstruct 由JSR-250提供，在构造函数执行完之后执行，等价于xml配置文件中bean的initMethod
+
+@PreDestory 由JSR-250提供，在Bean销毁之前执行，等价于xml配置文件中bean的destroyMethod
+
+#### （6）@Value注解
+
+@Value 为属性注入值（属性上）
+
+
+### 30. Spring Boot的流程？
 
 
 
+## 七、Spring Boot
+
+### 1.Spring boot重要的构成部分
+
+- 自动配置：针对很多Spring应用程序常见的应用功能， Spring Boot能自动提供相关配置。
+
+- 起步依赖：告诉Spring Boot需要什么功能，它就能引入需要的库。
+
+  > 向项目中添加依赖是件富有挑战的事。你需要什么库？它的==Group和Artifact==是什么？你需要哪个版本？哪个版本不会和项目中的其他依赖发生冲突？
+
+- 命令行界面：这是Spring Boot的可选特性，借此你只需写代码就能完成完整的应用程序，无需传统项目构建。
+- Actuator：让你能够深入运行中的Spring Boot应用程序，一探究竟。
 
 
 
+### 2.Spring Boot启动过程https://www.e-learn.cn/content/qita/2004793
 
 
 
+### 3.websocket？
 
+- 前端：sockjs，stomp
+
+#### （1）后台向前端推送？
+
+- 前端获取SockJS对象
+- 后端config，注册Endpoint，注册configureMessageBroker，simpleMessageTemplate.convertAndSend
+- 前端接收：stomp，传入Sockjs对象，Stomp进行connect，订阅subscribe，拿到==response.body==
+
+#### （2）后端向指定的前端推送？
+
+
+
+#### （3）前端两个用户进行通信？
+
+- Controller消息路由
+- service中定义convertAndSend
+- 前端
+  - SockJS
+  - Stomp
+  - sessionid标示用户，得到唯一的用户？
+  - @Scheduled
+
+
+
+#### （4）监控系统，jvm负载
+
+- @EnableScheduling
+
+- 功能：已用内存，可用内存
+- 获取系统的信息，==Runtime==
 
 ## 八、Redis高并发
 
@@ -4769,6 +5091,10 @@ Redis 通过 ==MULTI、EXEC、WATCH 等命令==来实现事务(transaction)功�
 ### 10.redis高可用？
 
 https://www.cnblogs.com/twinhead/p/9900659.html
+
+### 11.redis相关的命令？
+
+http://redisdoc.com/
 
 ## 九、Kafka，Redis
 
@@ -5692,12 +6018,10 @@ public class BitMap {
 - 梦想毕业进入一家像阿里一样优秀的互联网企业，向优秀的人看齐。
 - 个人喜欢写程序：我希望在我进入公司的一年的时间里，快速向前辈学习，不能够拖后腿，工作两年我希望能够对Java技术栈以及生态有一个较为的全新深刻的认识，眼界更加开阔。工作三年的时候，我希望我能够==正确引导新人的成长==。继续自己的技术路线，从一个初级的程序员，向中级高级进步，成为一个资深的技术专家。
 
-### 13.对你影响最大的人是谁（母亲）
+### 13.对你影响最大的人是谁（哥哥）
 
-- 坚强
-- 坚韧（能屈能伸）
-- 孝顺
-- 果断，有魄力
+- 学业上的指导
+- 生活上的指导
 
 ### 14.要是用三个词来概括你自己，你选择哪三个词
 
