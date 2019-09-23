@@ -1,5 +1,5 @@
 package JianZhiOffer;
-import BinaryTree.BinaryTreeNode;
+import CommonProblems.BinaryTree.BinaryTreeNode;
 
 import java.util.ArrayList;
 import java.util.List;

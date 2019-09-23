@@ -4,7 +4,7 @@ package JianZhiOffer;/**
  * @Date 19-3-5 下午6:53
  * @Created by mao<tianmao818@qq.com>
  */
-import BinaryTree.BinaryTreeNode;
+import CommonProblems.BinaryTree.BinaryTreeNode;
 public class ConvertSearchTree {
     private class TreeNode {
         int val = 0;

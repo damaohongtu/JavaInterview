@@ -4,8 +4,8 @@ package JianZhiOffer;/**
  * @Date 19-3-4 下午4:39
  * @Created by mao<tianmao818@qq.com>
  */
-import BinaryTree.BinaryTreeNode;
-import BinaryTree.Traversal;
+import CommonProblems.BinaryTree.BinaryTreeNode;
+import CommonProblems.BinaryTree.Traversal;
 public class MirrorTree {
     public void mirror(BinaryTreeNode root){
         if(root==null){

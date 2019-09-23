@@ -4,7 +4,7 @@ package JianZhiOffer;/**
  * @Date 19-3-4 下午3:36
  * @Created by mao<tianmao818@qq.com>
  */
-import BinaryTree.BinaryTreeNode;
+import CommonProblems.BinaryTree.BinaryTreeNode;
 public class BinaryTreeDepth {
     public int getDeep(BinaryTreeNode root){
         int deep=0;

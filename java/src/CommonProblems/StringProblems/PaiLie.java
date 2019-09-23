@@ -40,7 +40,6 @@ public class PaiLie {
                 strArray[index]=temp;
             }
         }
-
     }
 
 }
